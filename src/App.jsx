@@ -1,12 +1,13 @@
 import React from "react";
 import "tailwindcss/tailwind.css";
-import Model from "./Components/Computer/computer";
+import Blogs from "./Pages/Blogs/Blogs";
 
 function App() {
-  return (
 
-      <Model />
-   
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-silver">
+      <Blogs />
+    </div>
   );
 }
 
