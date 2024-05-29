@@ -1,5 +1,5 @@
 import React from "react";
-
+import { FaLinkedin, FaMedium, FaGithub } from 'react-icons/fa';
 const MediumProfile = () => {
   const articles = [
     {
@@ -74,6 +74,7 @@ const MediumProfile = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
+               <FaMedium className="mr-12 " />
               Read More
             </a>
           </div>
