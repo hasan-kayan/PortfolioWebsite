@@ -2,13 +2,10 @@ import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import ProjectCard from "./ProjectCards";
 import Particle from "../Particle";
-import leaf from "../../Assets/Projects/leaf.png";
-import emotion from "../../Assets/Projects/emotion.png";
 import editor from "../../Assets/Projects/codeEditor.png";
-import chatify from "../../Assets/Projects/chatify.png";
-import suicide from "../../Assets/Projects/suicide.png";
-import bitsOfCode from "../../Assets/Projects/blog.png";
-import udemy from "../../Assets/Projects/udemy.png"
+import udemy from "../../Assets/Projects/udemy.png";
+import uipath from "../../Assets/Projects/uipath.jpeg";
+import three from "../../Assets/Projects/three.png";
 
 function Projects() {
   return (
@@ -24,7 +21,7 @@ function Projects() {
         <Row style={{ justifyContent: "center", paddingBottom: "10px" }}>
           <Col md={4} className="project-card">
             <ProjectCard
-              imgPath={chatify}
+              imgPath={editor}
               isBlog={false}
               title="CodeStandartsTool"
               description="A tool that helps us to write better codes with standart, checks the project. This tool later will allow user to declare own coding standart and enforce them in projects while commits."
@@ -34,7 +31,7 @@ function Projects() {
 
           <Col md={4} className="project-card">
             <ProjectCard
-              imgPath={bitsOfCode}
+              imgPath={three}
               isBlog={false}
               title="MeshSubtractor3D"
               description="This project provides a set of utility classes that extend the functionality of Three.js geometries with Constructive Solid Geometry (CSG) capabilities, using the three-csg-ts library. Our goal is to provide an easy-to-use interface for performing complex geometry operations such as union, subtraction, and intersection."
@@ -44,7 +41,7 @@ function Projects() {
 
           <Col md={4} className="project-card">
             <ProjectCard
-              imgPath={editor}
+              imgPath={uipath}
               isBlog={false}
               title="Custom Activities For UiPath"
               description="Here you can find each activity set, source codes, nuget packages and development process notes. At this folder you are going to finde completed activities but at this folder activities developed in different project structures because of that each activty has its own nuget package. These activities are the completed ones, not the all Excel Activities."
