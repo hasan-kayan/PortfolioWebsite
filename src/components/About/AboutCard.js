@@ -16,8 +16,8 @@ function AboutCard() {
             <br />I am workin on a AI based web application that allows users to
             create architectural designs with a great user experience. My main
             duty at this project is developing the design mechanism and the
-            backend of the application. You can vist{" "}
-            <a href="kend.ai" style={{ color: "purple" }}>
+            backend of the application. You can visit{" "}
+            <a href="https://kend.ai" target="_blank" rel="noopener noreferrer" style={{ color: "purple" }}>
               {" "}
               kend.ai
             </a>{" "}
