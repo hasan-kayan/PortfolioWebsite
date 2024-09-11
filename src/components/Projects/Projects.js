@@ -6,7 +6,7 @@ import editor from "../../Assets/Projects/codeEditor.png";
 import udemy from "../../Assets/Projects/udemy.png";
 import uipath from "../../Assets/Projects/uipath.jpeg";
 import three from "../../Assets/Projects/three.png";
-
+import wise from "../../Assets/Projects/wise.jpg";
 function Projects() {
   return (
     <Container fluid className="project-section">
@@ -55,6 +55,15 @@ function Projects() {
               title="Custom Activities For UiPath"
               description="This is a Python script that scrapes Udemy coupons from three different websites: real.discount, discudemy.com, and couponscorpion.com. It uses Selenium and BeautifulSoup libraries to navigate the webpages, extract data and write to a CSV file."
               ghLink="https://github.com/hasan-kayan/Udemy_Coupon_Scrapper"
+            />
+          </Col>
+          <Col md={4} className="project-card">
+            <ProjectCard
+              imgPath={wise}
+              isBlog={false}
+              title="Compute Wise"
+              description="ComputeWise is an all-in-one Python library designed to elevate your network and system security monitoring. Whether you're looking to monitor your computer’s performance, analyze network activity, or check system specifications, ComputeWise provides a powerful set of tools to safeguard your environment."
+              ghLink="https://github.com/hasan-kayan/ComputeWise"
             />
           </Col>
         </Row>
