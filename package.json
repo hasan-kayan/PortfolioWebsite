@@ -27,7 +27,8 @@
     "deploy": "firebase deploy",
     "auto-deploy": "firebase login && npm run build && firebase deploy && rm -rf build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "commit-deploy": "git add . && git commit -m 'Deployed to Firebase' && git push && npm run auto-deploy"
   },
   "eslintConfig": {
     "extends": [
