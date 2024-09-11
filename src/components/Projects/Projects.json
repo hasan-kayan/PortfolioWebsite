@@ -1,0 +1,38 @@
+[
+    {
+      "imgKey": "editor",
+      "isBlog": false,
+      "title": "CodeStandartsTool",
+      "description": "A tool that helps us to write better codes with standard checks...",
+      "ghLink": "https://github.com/hasan-kayan/CodeStandartsTool"
+    },
+    {
+      "imgKey": "three",
+      "isBlog": false,
+      "title": "MeshSubtractor3D",
+      "description": "This project provides a set of utility classes that extend...",
+      "ghLink": "https://github.com/hasan-kayan/MeshSubtractor3D"
+    },
+    {
+      "imgKey": "uipath",
+      "isBlog": false,
+      "title": "Custom Activities For UiPath",
+      "description": "Here you can find each activity set, source codes, nuget packages...",
+      "ghLink": "https://github.com/hasan-kayan/Custom_Activities_For_UiPath"
+    },
+    {
+      "imgKey": "udemy",
+      "isBlog": false,
+      "title": "Udemy Coupon Scrapper",
+      "description": "This is a Python script that scrapes Udemy coupons from...",
+      "ghLink": "https://github.com/hasan-kayan/Udemy_Coupon_Scrapper"
+    },
+    {
+      "imgKey": "wise",
+      "isBlog": false,
+      "title": "Compute Wise",
+      "description": "ComputeWise is an all-in-one Python library designed...",
+      "ghLink": "https://github.com/hasan-kayan/ComputeWise"
+    }
+  ]
+  
