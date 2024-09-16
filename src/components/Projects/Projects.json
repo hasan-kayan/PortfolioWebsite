@@ -7,6 +7,13 @@
     "ghLink": "https://github.com/hasan-kayan/CodeStandartsTool"
   },
   {
+    "imgKey": "wise",
+    "isBlog": false,
+    "title": "Compute Wise",
+    "description": "ComputeWise is a comprehensive Python library designed to enhance network and system security monitoring. It provides tools for monitoring computer performance, analyzing network activity, and checking system specifications, all aimed at improving security and safeguarding environments.",
+    "ghLink": "https://github.com/hasan-kayan/ComputeWise"
+  },
+  {
     "imgKey": "three",
     "isBlog": false,
     "title": "MeshSubtractor3D",
@@ -26,12 +33,6 @@
     "title": "Udemy Coupon Scrapper",
     "description": "A Python script that scrapes Udemy coupons from three different websites: real.discount, discudemy.com, and couponscorpion.com. The script uses Selenium and BeautifulSoup to navigate webpages, extract coupon data, and write it to a CSV file for easy access.",
     "ghLink": "https://github.com/hasan-kayan/Udemy_Coupon_Scrapper"
-  },
-  {
-    "imgKey": "wise",
-    "isBlog": false,
-    "title": "Compute Wise",
-    "description": "ComputeWise is a comprehensive Python library designed to enhance network and system security monitoring. It provides tools for monitoring computer performance, analyzing network activity, and checking system specifications, all aimed at improving security and safeguarding environments.",
-    "ghLink": "https://github.com/hasan-kayan/ComputeWise"
   }
+ 
 ]
