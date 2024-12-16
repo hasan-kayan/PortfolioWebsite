@@ -1,5 +1,12 @@
 [
   {
+    "imgKey": "kend",
+    "isBlog": false,
+    "title": "KEND AI",
+    "description": "KEND AI is a revolutional AI-based 3D CAD program that allows users to imagine architectural structures and create them in a virtual environment. The program uses AI to generate 3D models from 2D sketches, enabling users to design and visualize their ideas in real-time on web, I have developed the backend and frontend of the project including sketch mechanisms and project structures.",
+    "ghLink": "https://kend.ai/"
+  },
+  {
     "imgKey": "editor",
     "isBlog": false,
     "title": "CodeStandardsTool",
