@@ -10,6 +10,7 @@ import three from "../../Assets/Projects/three.png";
 import uipath from "../../Assets/Projects/uipath.jpeg";
 import udemy from "../../Assets/Projects/udemy.png";
 import wise from "../../Assets/Projects/wise.jpg";
+import kend from "../../Assets/Projects/kend.jpg";
 
 // Create an object to map image keys to imports
 const images = {
