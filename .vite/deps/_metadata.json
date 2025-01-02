@@ -1,0 +1,73 @@
+{
+  "hash": "81e90fa1",
+  "configHash": "521b211c",
+  "lockfileHash": "87fbfc61",
+  "browserHash": "da3d4303",
+  "optimized": {
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "cc15d8e9",
+      "needsInterop": true
+    },
+    "react-router-dom": {
+      "src": "../../node_modules/react-router-dom/dist/index.js",
+      "file": "react-router-dom.js",
+      "fileHash": "97b63d85",
+      "needsInterop": false
+    },
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "2fe1173d",
+      "needsInterop": true
+    },
+    "@headlessui/react": {
+      "src": "../../node_modules/@headlessui/react/dist/headlessui.esm.js",
+      "file": "@headlessui_react.js",
+      "fileHash": "a06545ee",
+      "needsInterop": false
+    },
+    "@heroicons/react/24/outline": {
+      "src": "../../node_modules/@heroicons/react/24/outline/esm/index.js",
+      "file": "@heroicons_react_24_outline.js",
+      "fileHash": "c0191865",
+      "needsInterop": false
+    },
+    "react-icons/ai": {
+      "src": "../../node_modules/react-icons/ai/index.mjs",
+      "file": "react-icons_ai.js",
+      "fileHash": "a9830833",
+      "needsInterop": false
+    },
+    "react-pdf": {
+      "src": "../../node_modules/react-pdf/dist/esm/entry.js",
+      "file": "react-pdf.js",
+      "fileHash": "f6d321b8",
+      "needsInterop": false
+    },
+    "react-icons/cg": {
+      "src": "../../node_modules/react-icons/cg/index.mjs",
+      "file": "react-icons_cg.js",
+      "fileHash": "c343cfd3",
+      "needsInterop": false
+    },
+    "react-icons/bs": {
+      "src": "../../node_modules/react-icons/bs/index.mjs",
+      "file": "react-icons_bs.js",
+      "fileHash": "b7edc086",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-LNSK4TEA": {
+      "file": "chunk-LNSK4TEA.js"
+    },
+    "chunk-JFXI6CLD": {
+      "file": "chunk-JFXI6CLD.js"
+    },
+    "chunk-DVCWAFVK": {
+      "file": "chunk-DVCWAFVK.js"
+    }
+  }
+}
