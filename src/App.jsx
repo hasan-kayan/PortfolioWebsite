@@ -2,9 +2,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NavBar from "./Components/Navbar";
 import Home from "./Components/HomePage/Home";
 import Projects from "./Components/ProjectsPage/Projects";
-import Analyze from "./Components/AnalyzePage/Analyze";
-import Tools from "./Components/ToolsPage/Tools"
-import Passwords from "./Components/PasswordPage/Password";
+import ResumeNew from "./Components/Resume/Resume";
+import About from "./Components/About/About"
 function App() {
   return (
     <Router>
@@ -13,11 +12,9 @@ function App() {
         <div className="container mx-auto p-4">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/projects" element={<Projects />} />
-            <Route path="/contact" element={<Analyze />} />
-            <Route path="/tools" element={<Tools />} />
-            <Route path="/passwords" element={<Passwords />} />
-
+            <Route path="/about" element={<Projects />} />
+            <Route path="/resume" element={<ResumeNew />} />
+            <Route path="/projects" element={<About />} />
 
           </Routes>
         </div>

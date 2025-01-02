@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row } from "react-bootstrap";
-import Button from "react-bootstrap/Button";
-import Particle from "../Particle";
-import pdf from "../../Assets/HASAN_KAYAN.pdf";
 import { AiOutlineDownload } from "react-icons/ai";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+
+const pdf = new URL("../../Assets/HASAN_KAYAN.pdf", import.meta.url).href;
 
 function ResumeNew() {
   const [width, setWidth] = useState(1200);
@@ -16,39 +14,38 @@ function ResumeNew() {
   }, []);
 
   return (
-    <div>
-      <Container fluid className="resume-section">
-        <Particle />
-        <Row style={{ justifyContent: "center", position: "relative" }}>
-          <Button
-            variant="primary"
+    <div className="bg-gray-100 min-h-screen flex flex-col items-center py-8">
+      <div className="w-full max-w-3xl">
+        <div className="flex justify-center mb-4">
+          <a
             href={pdf}
             target="_blank"
-            style={{ maxWidth: "250px" }}
+            rel="noopener noreferrer"
+            className="px-6 py-3 bg-blue-600 text-white rounded-md flex items-center hover:bg-blue-700 transition"
           >
-            <AiOutlineDownload />
-            &nbsp;Download CV
-          </Button>
-        </Row>
+            <AiOutlineDownload className="mr-2" />
+            Download CV
+          </a>
+        </div>
 
-        <Row className="resume">
-          <Document file={pdf} className="d-flex justify-content-center">
+        <div className="flex justify-center bg-white shadow-md p-4 rounded-md">
+          <Document file={pdf}>
             <Page pageNumber={1} scale={width > 786 ? 1.7 : 0.6} />
           </Document>
-        </Row>
+        </div>
 
-        <Row style={{ justifyContent: "center", position: "relative" }}>
-          <Button
-            variant="primary"
+        <div className="flex justify-center mt-4">
+          <a
             href={pdf}
             target="_blank"
-            style={{ maxWidth: "250px" }}
+            rel="noopener noreferrer"
+            className="px-6 py-3 bg-blue-600 text-white rounded-md flex items-center hover:bg-blue-700 transition"
           >
-            <AiOutlineDownload />
-            &nbsp;Download CV
-          </Button>
-        </Row>
-      </Container>
+            <AiOutlineDownload className="mr-2" />
+            Download CV
+          </a>
+        </div>
+      </div>
     </div>
   );
 }
