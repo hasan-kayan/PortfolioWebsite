@@ -1,11 +1,10 @@
 import React from "react";
+import ProjectCard from "../ProjectCard";
 
 const Home = () => {
   return (
     <div className="flex items-center justify-center h-screen bg-appbgcolor">
-      <h1 className="text-h1textcolor font-poppins text-4xl">
-        Wellcome Hasan ! 
-      </h1>
+      
     </div>
   );
 };
