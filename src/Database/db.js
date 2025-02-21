@@ -1,33 +1,32 @@
 const mongoose = require("mongoose");
 require("dotenv").config();
 
+const databases = {};
+
 const connectDB = async () => {
   try {
-    // Connect to Portfolio Database
-    const portfolioConnection = mongoose.createConnection(
-      `${process.env.MONGO_CONNECT_STRING}my-portfolio`,
-      { useNewUrlParser: true, useUnifiedTopology: true }
-    );
+    if (databases.portfolioDB) return databases; // Return existing connections
 
-    // Connect to Projects Database
-    const projectsConnection = mongoose.createConnection(
-      `${process.env.MONGO_CONNECT_STRING}my-projects`,
-      { useNewUrlParser: true, useUnifiedTopology: true }
-    );
+    const mongoURI = process.env.MONGO_CONNECT_STRING;
+    if (!mongoURI) {
+      throw new Error("MongoDB connection string is missing in environment variables.");
+    }
 
-    // Connect to Blogs Database
-    const blogsConnection = mongoose.createConnection(
-      `${process.env.MONGO_CONNECT_STRING}my-blogs`,
-      { useNewUrlParser: true, useUnifiedTopology: true }
-    );
+    // Connect to MongoDB once
+    const connection = await mongoose.connect(mongoURI);
+    console.log("✅ Connected to MongoDB successfully!");
 
-    console.log("Connected to Portfolio, Projects, and Blogs databases");
+    // Store databases in a global object
+    databases.portfolioDB = connection.connection.useDb("my-portfolio");
+    databases.projectsDB = connection.connection.useDb("my-projects");
+    databases.blogsDB = connection.connection.useDb("my-blogs");
 
-    return { portfolioConnection, projectsConnection, blogsConnection };
+    return databases;
   } catch (err) {
-    console.error("MongoDB connection error:", err.message);
+    console.error("❌ MongoDB connection error:", err.message);
     process.exit(1);
   }
 };
 
-module.exports = connectDB;
+// Export the connection function and databases object
+module.exports = { connectDB, databases };

@@ -1,12 +1,6 @@
-/**
- * @file portfolioRoutes.js
- * @description Routes for handling portfolio PDF upload, retrieval, and deletion with authentication.
- * @module routes/portfolioRoutes
- */
-
 const express = require("express");
 const multer = require("multer");
-const Portfolio = require("../models/portfolioModel");
+const getPortfolioModel = require("../models/portfolioModel");
 const authenticateToken = require("../middleware/authMiddleware");
 
 const router = express.Router();
@@ -21,22 +15,26 @@ const upload = multer({ storage: storage });
  */
 router.get("/download", async (req, res) => {
   try {
+    const Portfolio = getPortfolioModel();
     const portfolio = await Portfolio.findOne();
-    if (!portfolio || !portfolio.pdf) {
+    if (!portfolio || !portfolio.pdf || !portfolio.pdf.data) {
       return res.status(404).json({ message: "No PDF found" });
     }
 
-    res.set("Content-Type", portfolio.pdf.contentType);
+    res.set({
+      "Content-Type": portfolio.pdf.contentType,
+      "Content-Disposition": 'attachment; filename="portfolio.pdf"',
+    });
     res.send(portfolio.pdf.data);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Error retrieving PDF:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
 /**
  * @route   POST /api/portfolio/upload
  * @desc    Upload or update the PDF file (Protected: Requires authentication)
- * @access  Private
  */
 router.post("/upload", authenticateToken, upload.single("pdf"), async (req, res) => {
   try {
@@ -44,37 +42,41 @@ router.post("/upload", authenticateToken, upload.single("pdf"), async (req, res)
       return res.status(400).json({ error: "No file uploaded" });
     }
 
-    // Update or create the portfolio entry
-    const portfolio = await Portfolio.findOneAndUpdate(
-      {},
-      { pdf: { data: req.file.buffer, contentType: req.file.mimetype } },
-      { new: true, upsert: true }
-    );
+    const Portfolio = getPortfolioModel();
 
-    res.json({ message: "PDF uploaded successfully", portfolio });
+    // Ensure only one PDF entry exists (overwrite existing)
+    await Portfolio.deleteMany({});
+
+    const newPortfolio = new Portfolio({
+      pdf: { data: req.file.buffer, contentType: req.file.mimetype },
+    });
+
+    await newPortfolio.save();
+
+    res.status(201).json({ message: "PDF uploaded successfully" });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Error uploading PDF:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
 /**
  * @route   DELETE /api/portfolio/delete
  * @desc    Delete the stored PDF (Protected: Requires authentication)
- * @access  Private
  */
 router.delete("/delete", authenticateToken, async (req, res) => {
   try {
-    const portfolio = await Portfolio.findOne();
-    if (!portfolio) {
+    const Portfolio = getPortfolioModel();
+    const deletedPortfolio = await Portfolio.findOneAndDelete({});
+
+    if (!deletedPortfolio) {
       return res.status(404).json({ message: "No PDF found to delete" });
     }
 
-    // Remove the PDF from the database
-    await Portfolio.findOneAndUpdate({}, { $unset: { pdf: 1 } });
-
     res.json({ message: "PDF deleted successfully" });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Error deleting PDF:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
