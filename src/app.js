@@ -13,6 +13,7 @@
 const express = require('express');
 const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
+const portfolioRoutes = require('./routes/portfolioRoutes')
 const config = require('./config/envConfig');
 
 const app = express(); // Application init Express
@@ -23,6 +24,7 @@ app.use(cors());          // Enable CORS for cross-origin requests
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/portfolio', portfolioRoutes)
 
 // Default route
 app.get('/', (req, res) => {
