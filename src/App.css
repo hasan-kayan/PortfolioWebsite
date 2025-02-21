@@ -1,0 +1,142 @@
+/* If you are gonna use CSS, you can write it here */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+body {
+    background-color: #131416;
+    font-family: 'Poppins', sans-serif;
+}
+
+.menu-wrapper {
+    --__reactRadialMenu__menu-bgColor: #18181b;
+    --__reactRadialMenu__separator-color: #18181b;
+    --__reactRadialMenu__item-color: #333;
+    --__reactRadialMenu__activeItem-color: #fff;
+    --__reactRadialMenu__activeItem-bgColor: #27272a;
+    --__reactRadialMenu__arrow-color: #6f6e77;
+    --__reactRadialMenu__activeArrow-color: #fff;
+}
+
+.swiper {
+    width: 34%;
+    height: 100%;
+}
+
+.swiper-slide {
+    text-align: center;
+
+    /* Center slide text vertically */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    align-self: center;
+}
+
+.swiper-slide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.swiper-slide {
+    width: 60%;
+}
+
+.swiper-slide:nth-child(2n) {
+    width: 40%;
+}
+
+.swiper-slide:nth-child(3n) {
+    width: 20%;
+}
+
+.divClassName::-webkit-scrollbar {
+    width: 12px;
+    height: 8px; /* scrollbar genişliği */
+}
+
+.divClassName::-webkit-scrollbar-thumb {
+    background-color: #52525b; /* scrollbar başlık rengi */
+    border-radius: 16px; /* scrollbar köşe yarıçapı */
+}
+
+.divClassName::-webkit-scrollbar-track-piece {
+    background-color: #18181b;
+    border-radius: 16px;
+    /* scrollbar arka plan rengi */
+}
+.divClassName::-webkit-scrollbar-thumb:vertical {
+    background-color: #52525b;
+    border-radius: 16px;
+    width: 8px;
+    height: 8px;
+    /* scrollbar arka plan rengi */
+}
+.divClassName::-webkit-scrollbar:vertical {
+    background-color: #52525b;
+    border-radius: 16px;
+    width: 8px;
+    height: 8px;
+    /* scrollbar arka plan rengi */
+}
+
+.divClassName {
+    scrollbar-width: thin; /* scrollbar genişliği */
+}
+
+.divClassName::-moz-scrollbar-thumb {
+    background-color: #52525b; /* scrollbar başlık rengi */
+    border-radius: 16px; /* scrollbar köşe yarıçapı */
+}
+
+.divClassName::-moz-scrollbar-track {
+    background-color: #18181b;
+    border-radius: 16px; /* scrollbar arka plan rengi */
+}
+.divClassName::-webkit-scrollbar {
+    width: 12px;
+    height: 8px; /* scrollbar genişliği */
+}
+.no-spin::-webkit-inner-spin-button,
+.no-spin::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.no-spin {
+    -moz-appearance: textfield; /* Firefox'ta iç okları gizlemek için */
+    appearance: textfield; /* Diğer tarayıcılarda iç okları gizlemek için */
+}
+.no-scrollbar {
+    /* Tüm tarayıcılarda scrollbar'ı gizlemek için genel bir stil */
+    scrollbar-width: none; /* Firefox'ta scrollbar'ı gizlemek için */
+    -ms-overflow-style: none; /* IE 11'de scrollbar'ı gizlemek için */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    /* WebKit tabanlı tarayıcılarda scrollbar'ı gizlemek için */
+    display: none;
+}
+
+input::file-selector-button {
+    font-weight: medium;
+    color: white;
+    background-color: #3f3f46;
+    padding: 0.5em;
+    border: thin solid #3f3f46;
+    border-radius: 8px;
+    font-family: Poppins, sans-serif;
+}
+input::file-selector-button:hover {
+    font-weight: medium;
+    color: white;
+    background-color: #52525b;
+    padding: 0.5em;
+    border: thin solid #52525b;
+    border-radius: 8px;
+    font-family: Poppins, sans-serif;
+}
