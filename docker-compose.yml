@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  auth-service:
+    build: .
+    ports:
+      - "3123:3123"
+    env_file:
+      - .env
+    restart: always
