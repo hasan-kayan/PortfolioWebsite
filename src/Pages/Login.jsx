@@ -1,3 +1,4 @@
+// Pages/Login.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -9,9 +10,10 @@ export default function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+    console.log("Login triggered");
+    console.log("URL:", import.meta.env.VITE_AUTH_URL);
     try {
-      const response = await fetch(process.env.REACT_APP_AUTH_URL, {
+      const response = await fetch(import.meta.env.VITE_AUTH_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -23,7 +25,7 @@ export default function Login() {
 
       if (response.ok) {
         localStorage.setItem("authToken", data.token); // Store token
-        navigate("/admin-hk"); // Redirect to admin page
+        navigate("/"); // Redirect to home (or your desired route)
       } else {
         setError(data.message || "Invalid credentials");
       }

@@ -1,7 +1,11 @@
+// Components/ProtectedPage.jsx
+import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
-export default function ProtectedRoute() {
-  const authToken = localStorage.getItem("authToken");
+const ProtectedRoute = () => {
+  const isAuthenticated = !!localStorage.getItem("authToken");
 
-  return authToken ? <Outlet /> : <Navigate to="/login" />;
-}
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+};
+
+export default ProtectedRoute;

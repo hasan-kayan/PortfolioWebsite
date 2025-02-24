@@ -1,22 +1,29 @@
+// App.jsx
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NavBar from "./Components/Navbar";
 import Home from "./Pages/Home";
-import Admin from "./Pages/Admin/Admin"
 import ProtectedRoute from "./Components/ProtectedPage";
-import Login from "./Pages/Admin/Login"
+import Login from "./Pages/Login";
 
 function App() {
+  const isAuthenticated = !!localStorage.getItem("authToken");
+
   return (
     <Router>
       <div className="min-h-screen bg-appbgcolor">
-        <NavBar />
+        {/* Only show NavBar if authenticated */}
+        {isAuthenticated && <NavBar />}
         <div className="container mx-auto p-4">
           <Routes>
-             <Route element={<ProtectedRoute />}>
-              <Route path="/admin-hk" element={<Admin />} />
+            {/* Public Route */}
+            <Route path="/login" element={<Login />} />
+            
+            {/* Protected Routes */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/" element={<Home />} />
+              {/* If you also want /home to be protected: */}
+              <Route path="/home" element={<Home />} />
             </Route>
-            <Route path="/" element={<Home />} />
-           <Route path="/login" element={<Login/>}/> 
           </Routes>
         </div>
       </div>
