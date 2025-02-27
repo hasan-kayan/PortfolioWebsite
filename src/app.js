@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 const setupRoutes = require("./routes/Routes"); // ✅ Import centralized routes
-const config = require("./config/envConfig");
 
 const app = express(); // Initialize Express
 
