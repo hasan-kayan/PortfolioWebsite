@@ -10,12 +10,14 @@ import Bar from "./scenes/bar";
 import Form from "./scenes/form";
 import Line from "./scenes/line";
 import Pie from "./scenes/pie";
-import FAQ from "./scenes/faq";
+import ManageWebsite from "./scenes/ManageSite";
 import Geography from "./scenes/geography";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
 import Calendar from "./scenes/calendar/calendar";
-
+import Blogs from "./scenes/ManageSite/Managers/Blogs"
+import Portfolio from "./scenes/ManageSite/Managers/Portfolio"
+import Projects from "./scenes/ManageSite/Managers/Projects"
 function App() {
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState(true);
@@ -37,9 +39,13 @@ function App() {
               <Route path="/bar" element={<Bar />} />
               <Route path="/pie" element={<Pie />} />
               <Route path="/line" element={<Line />} />
-              <Route path="/faq" element={<FAQ />} />
+              <Route path="/manage-site" element={<ManageWebsite />} />
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/geography" element={<Geography />} />
+              <Route path="/manage-site/blogs" element={<Blogs/>} />
+              <Route path="/manage-site/portfolio" element={<Portfolio/>} />
+              <Route path="/manage-site/projects" element={<Projects/>} />
+
             </Routes>
           </main>
         </div>
