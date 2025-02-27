@@ -14,7 +14,7 @@ const Blogs = () => {
   const [blogs, setBlogs] = useState([]);
 
   useEffect(() => {
-    axios.get(`${API_URL}/blog/gett-all-blogs`)
+    axios.get(`${API_URL}/website/blog/gett-all-blogs`)
       .then(response => setBlogs(response.data))
       .catch(error => console.error("Error fetching blogs:", error));
   }, []);
@@ -28,7 +28,7 @@ const Blogs = () => {
       url: values.url
     };
     try {
-      await axios.post(`${API_URL}/blog/create-blog`, blogData);
+      await axios.post(`${API_URL}/website/blog/create-blog`, blogData);
       alert("Blog Saved Successfully!");
       setBlogs([...blogs, blogData]);
       resetForm();
@@ -40,7 +40,7 @@ const Blogs = () => {
 
   const handleDeleteBlog = async (id) => {
     try {
-      await axios.delete(`${API_URL}/blog/delete-blogby${id}`);
+      await axios.delete(`${API_URL}/website/blog/delete-blogby${id}`);
       setBlogs(blogs.filter(blog => blog.id !== id));
       alert("Blog Deleted Successfully!");
     } catch (error) {
@@ -90,7 +90,7 @@ const Blogs = () => {
             </Box>
             
             <Box display="flex" justifyContent="end" mt="20px">
-              <Button type="submit" color="secondary" variant="contained">Save Blog</Button>
+              <Button type="submit" color="secondary" variant="contained" onClick={handleFormSubmit}>Save Blog</Button>
             </Box>
           </form>
         )}

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Topbar from "./scenes/global/Topbar";
 import Sidebar from "./scenes/global/Sidebar";
 import Dashboard from "./scenes/dashboard";
@@ -15,37 +15,51 @@ import Geography from "./scenes/geography";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
 import Calendar from "./scenes/calendar/calendar";
-import Blogs from "./scenes/ManageSite/Managers/Blogs"
-import Portfolio from "./scenes/ManageSite/Managers/Portfolio"
-import Projects from "./scenes/ManageSite/Managers/Projects"
+import Blogs from "./scenes/ManageSite/Managers/Blogs";
+import Portfolio from "./scenes/ManageSite/Managers/Portfolio";
+import Projects from "./scenes/ManageSite/Managers/Projects";
+import Login from "./scenes/auth/Login";
+
 function App() {
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsAuthenticated(!!token);
+  }, []);
 
   return (
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <div className="app">
-          <Sidebar isSidebar={isSidebar} />
+          {isAuthenticated && <Sidebar isSidebar={isSidebar} />}
           <main className="content">
-            <Topbar setIsSidebar={setIsSidebar} />
+            {isAuthenticated && <Topbar setIsSidebar={setIsSidebar} />}
             <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/team" element={<Team />} />
-              <Route path="/contacts" element={<Contacts />} />
-              <Route path="/invoices" element={<Invoices />} />
-              <Route path="/form" element={<Form />} />
-              <Route path="/bar" element={<Bar />} />
-              <Route path="/pie" element={<Pie />} />
-              <Route path="/line" element={<Line />} />
-              <Route path="/manage-site" element={<ManageWebsite />} />
-              <Route path="/calendar" element={<Calendar />} />
-              <Route path="/geography" element={<Geography />} />
-              <Route path="/manage-site/blogs" element={<Blogs/>} />
-              <Route path="/manage-site/portfolio" element={<Portfolio/>} />
-              <Route path="/manage-site/projects" element={<Projects/>} />
-
+              {!isAuthenticated ? (
+                <Route path="/*" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
+              ) : (
+                <>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/team" element={<Team />} />
+                  <Route path="/contacts" element={<Contacts />} />
+                  <Route path="/invoices" element={<Invoices />} />
+                  <Route path="/form" element={<Form />} />
+                  <Route path="/bar" element={<Bar />} />
+                  <Route path="/pie" element={<Pie />} />
+                  <Route path="/line" element={<Line />} />
+                  <Route path="/manage-site" element={<ManageWebsite />} />
+                  <Route path="/calendar" element={<Calendar />} />
+                  <Route path="/geography" element={<Geography />} />
+                  <Route path="/manage-site/blogs" element={<Blogs />} />
+                  <Route path="/manage-site/portfolio" element={<Portfolio />} />
+                  <Route path="/manage-site/projects" element={<Projects />} />
+                  <Route path="*" element={<Navigate to="/" />} />
+                </>
+              )}
             </Routes>
           </main>
         </div>
