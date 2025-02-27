@@ -7,6 +7,7 @@ const ProjectSchema = new mongoose.Schema({
   technologies: [{ type: String }],
   githubLink: { type: String },
   demoLink: { type: String },
+  images: [{ type: String }],
   createdAt: { type: Date, default: Date.now },
 });
 
