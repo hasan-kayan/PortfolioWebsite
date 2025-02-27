@@ -1,30 +1,35 @@
-
 /**
  * @file server.js
  * @description Entry point for the Authentication Service. This file sets up and starts the server.
  */
 
- /**
-    * @requires ./src/app - The main application module.
-    * @requires ./src/config/envConfig - The configuration module for environment variables.
-    */
+/**
+ * @requires ./src/app - The main application module.
+ * @requires ./src/config/envConfig - The configuration module for environment variables.
+ * @requires ./src/Database/db - MongoDB connection module.
+ */
 
- /**
-    * @constant {number} PORT - The port number on which the server will listen.
-    * @constant {string} HOST - The host address on which the server will listen.
-    */
+const app = require("./src/app");
+const config = require("./src/config/envConfig");
+const connectDB = require("./src/Database/db"); // Import DB connection
 
- /**
-    * Starts the server and listens on the specified port and host.
-    * @callback listenCallback
-    * @returns {void}
-    */
-const app = require('./src/app');
-const config = require('./src/config/envConfig');
+const PORT = config.port; // Get configured port
+const HOST = config.host; // Get configured host
 
-const PORT = config.port; // get configuration port 
-const HOST = config.host; // gets configuration host 
-// start application on the based port 
-app.listen(PORT, HOST, () => {
-    console.log(`✅ Authentication microservice is running on http://localhost:${PORT}`);
-});
+/**
+ * Starts the server after ensuring MongoDB is connected.
+ */
+const startServer = async () => {
+  try {
+    await connectDB(); // Ensure MongoDB is connected before starting the server
+    app.listen(PORT, HOST, () => {
+      console.log(`✅ Authentication microservice is running on http://${HOST}:${PORT}`);
+    });
+  } catch (error) {
+    console.error("❌ Failed to start the server:", error.message);
+    process.exit(1);
+  }
+};
+
+// Run the server
+startServer();

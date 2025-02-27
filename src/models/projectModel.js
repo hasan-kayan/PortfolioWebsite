@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 
 const ProjectSchema = new mongoose.Schema({
+  id: { type: String, required: true, unique: true },
   title: { type: String, required: true },
   description: { type: String, required: true },
-  technologies: [{ type: String }], // List of technologies used e.g., ["React", "Node.js"]
-  githubLink: { type: String }, // Optional GitHub repository link
-  liveDemo: { type: String }, // Optional live demo link
-  image: { type: String }, // URL for project image
+  technologies: [{ type: String }],
+  githubLink: { type: String },
+  demoLink: { type: String },
   createdAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("Project", ProjectSchema);
+module.exports = mongoose.model("Project", ProjectSchema, "Projects"); // Collection name is "Projects"

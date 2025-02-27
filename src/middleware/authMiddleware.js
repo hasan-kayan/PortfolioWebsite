@@ -19,7 +19,6 @@ const config = require('../config/envConfig');
  *                     Calls the next middleware or route handler if the token is valid.
  */
 const authenticateToken = (req, res, next) => {
-    console.log("Authentication Trigered")
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1]; // Extract token from "Bearer <token>"
 
@@ -34,7 +33,6 @@ const authenticateToken = (req, res, next) => {
     } catch (error) {
         return res.status(401).json({ message: "Invalid or expired token" });
     }
-    console.log("Succesfull")
 };
 
 module.exports = authenticateToken;
