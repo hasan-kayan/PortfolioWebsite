@@ -5,7 +5,7 @@
  * @module config/envConfig
  */
 const jwt = require('jsonwebtoken');
-const config = require('../config/envConfig');
+const config = require('../../config/envConfig');
 
 /**
  * Handles user login by validating credentials and generating a JWT token.

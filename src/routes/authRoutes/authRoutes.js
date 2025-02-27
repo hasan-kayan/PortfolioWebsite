@@ -33,15 +33,15 @@
     * @param {callback} verifyToken - Controller function to handle token verification
     */
 const express = require('express');
-const { login, verifyToken } = require('../controllers/authController');
-const authenticateToken = require('../middleware/authMiddleware');
+const { authController } = require('../../controllers/Controllers');
+const { authMiddleware } = require('../../middleware/Middlewares');
 
 const router = express.Router();
 
 // Public route - Login
-router.post('/login', login);
+router.post('/login', authController.login);
 
 // Protected route - Verify JWT token
-router.get('/verify', authenticateToken, verifyToken);
+router.get('/verify', authMiddleware.authenticateToken, authController.verifyToken);
 
 module.exports = router;

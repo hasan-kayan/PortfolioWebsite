@@ -3,7 +3,7 @@
  * @description Controller functions for handling blog CRUD operations.
  */
 
-const Blog = require("../models/blogModel");
+const Blog = require("../../models/blogModel");
 
 /**
  * @desc    Create a new blog post

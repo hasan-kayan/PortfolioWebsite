@@ -3,7 +3,7 @@
  * @description Controller functions for handling portfolio PDF upload, retrieval, and deletion.
  */
 
-const Portfolio = require("../models/portfolioModel");
+const Portfolio = require("../../models/portfolioModel");
 
 /**
  * @desc    Retrieve the stored PDF (Public access)

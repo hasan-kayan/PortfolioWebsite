@@ -1,41 +1,21 @@
+const express = require("express");
+const cors = require("cors");
+const setupRoutes = require("./routes/Routes"); // ✅ Import centralized routes
+const config = require("./config/envConfig");
 
-/**
- * @fileoverview Main application file for the Authentication Service.
- * Initializes the Express application, sets up middleware, and defines routes.
- * 
- * @requires express
- * @requires cors
- * @requires ./routes/authRoutes
- * @requires ./config/envConfig
- * 
- * @module app
- */
-const express = require('express');
-const cors = require('cors');
-const authRoutes = require('./routes/authRoutes');
-const portfolioRoutes = require('./routes/portfolioRoutes')
-const blogRoutes=require('./routes/blogRoutes')
-const config = require('./config/envConfig');
-
-const app = express(); // Application init Express
+const app = express(); // Initialize Express
 
 // Middleware
-app.use(express.json());  // Parse JSON request bodies
-app.use(cors());          // Enable CORS for cross-origin requests
+app.use(express.json()); // Parse JSON request bodies
+app.use(cors()); // Enable CORS for cross-origin requests
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/portfolio', portfolioRoutes)
-app.use('/api/blogs', blogRoutes)
-// Default route
-app.get('/', (req, res) => {
-    res.json({ message: "Authentication microservice is running!" });
-});
+// Setup all routes
+setupRoutes(app); // ✅ Use centralized route function
 
 // Global error handling middleware
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ message: "Internal server error" });
+  console.error(err.stack);
+  res.status(500).json({ message: "Internal server error" });
 });
 
 module.exports = app;

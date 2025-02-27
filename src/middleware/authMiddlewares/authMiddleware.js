@@ -5,7 +5,7 @@
  */
 
 const jwt = require('jsonwebtoken');
-const config = require('../config/envConfig');
+const config = require('../../config/envConfig');
 
 /**
  * Middleware to authenticate a JWT token from the request headers.
@@ -35,4 +35,4 @@ const authenticateToken = (req, res, next) => {
     }
 };
 
-module.exports = authenticateToken;
+module.exports = {authenticateToken};
