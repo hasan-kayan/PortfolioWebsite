@@ -7,7 +7,7 @@ const BlogDetail = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BLOG_URL}/get-blogby/${id}`) // ✅ Corrected Vite env & API URL
+    fetch(`${import.meta.env.VITE_BLOG_URL}/get-blogby/${id}`)
       .then((res) => {
         if (!res.ok) {
           throw new Error(`HTTP error! Status: ${res.status}`);
