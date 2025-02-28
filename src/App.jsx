@@ -1,9 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NavBar from "./Components/Navbar";
 import Home from "./Pages/Home";
-import Admin from "./Pages/Admin/Admin"
-import ProtectedRoute from "./Components/ProtectedPage";
-import Login from "./Pages/Admin/Login"
+import BlogList from "./Pages/Blogs/Blogs"
+import BlogDetail from "./Pages/Blogs/BlogDetail";
 
 function App() {
   return (
@@ -11,12 +10,12 @@ function App() {
       <div className="min-h-screen bg-appbgcolor">
         <NavBar />
         <div className="container mx-auto p-4">
-          <Routes>
-             <Route element={<ProtectedRoute />}>
-              <Route path="/admin-hk" element={<Admin />} />
-            </Route>
+          <Routes>             
             <Route path="/" element={<Home />} />
-           <Route path="/login" element={<Login/>}/> 
+            <Route path="/blogs" element={<BlogList />} />
+            <Route path="/blog/:id" element={<BlogDetail />} />
+            <Route path="/" element={<Home />} />
+
           </Routes>
         </div>
       </div>
