@@ -50,7 +50,7 @@ const getAllBlogs = async (req, res) => {
  */
 const getBlogById = async (req, res) => {
   try {
-    const blog = await Blog.findOne({ id: req.params.id });
+    const blog = await Blog.findById(req.params.id);
     if (!blog) {
       return res.status(404).json({ message: "❌ Blog not found" });
     }
@@ -59,6 +59,7 @@ const getBlogById = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 /**
  * @desc    Update a blog post
