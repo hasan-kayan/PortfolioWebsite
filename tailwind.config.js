@@ -23,8 +23,9 @@ export default {
       },
       extend: {
           colors: {
-              appbgcolor: '#480ca8',
-              navbarbgcolor:'#560bad',
+              appbgcolorstart: '#02AABD',
+              appbgcolorend: '#00CDAC',
+              navbarbgcolor:'#1B3B50',
               divbgcolor: '#191A1D',
               divbgcoloropacity: 'rgba(24, 24, 27, 0.5)',
               divbgcoloralt: '#202124',
