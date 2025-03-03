@@ -5,7 +5,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { useLoader } from "@react-three/fiber";
 
 function Laptop() {
-    const gltf = useLoader(GLTFLoader, "/models/Laptop/Models/laptop.glb");
+    const gltf = useLoader(GLTFLoader, "/models/laptop.glb");
     return <primitive object={gltf.scene} scale={1.5} />;
 }
 
