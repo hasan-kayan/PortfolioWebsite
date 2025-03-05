@@ -1,12 +1,18 @@
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import { Suspense } from "react";
+import { Suspense, useRef } from "react";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { useLoader } from "@react-three/fiber";
+import { useLoader,useFrame } from "@react-three/fiber";
 
 function ESP32() {
+    const modelRef = useRef();
+useFrame(() => {
+    if (modelRef.current) {
+        modelRef.current.rotation.y += 0.01; // Slow rotation
+    }
+}); 
     const gltf = useLoader(GLTFLoader, "/models/esp32.glb");
-    return <primitive object={gltf.scene} scale={1.5} />;
+    return <primitive ref={modelRef} object={gltf.scene} scale={1.5} />;
 }
 
 export default function ESP32Scene() {
