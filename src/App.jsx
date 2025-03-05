@@ -12,7 +12,7 @@ import BlogDetail from "./Pages/Blogs/BlogDetail";
 function App() {
   return (
     <Router>
-      <div className="relative min-h-screen min-w-full overflow-hidden bg-gradient-to-r from-appbgcolorstart to-appbgcolorend">
+      <div className="relative min-h-screen min-w-full overflow-hidden bg-appbgcolor">
         {/* Animated White Wave */}
         <motion.div
           className="absolute top-0 left-0 w-full"

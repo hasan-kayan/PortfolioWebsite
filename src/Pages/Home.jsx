@@ -50,7 +50,7 @@ export default function Home() {
                     <div className="relative w-[75vh] h-[75vh] flex justify-center">
                         {sec.component}
                     </div>
-                    <div className="w-1/2 text-xl font-semibold text-gray-800 space-y-6 flex flex-col items-center">
+                    <div className="w-1/2 text-xl font-semibold text-fefae0 space-y-6 flex flex-col items-center">
                         {sec.showLogo && (
                             <motion.img 
                                 src={logo} 

@@ -1,12 +1,20 @@
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import { Suspense } from "react";
+import { Suspense, useRef } from "react";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { useLoader } from "@react-three/fiber";
+import { useLoader, useFrame } from "@react-three/fiber";
 
 function Laptop() {
     const gltf = useLoader(GLTFLoader, "/models/laptop.glb");
-    return <primitive object={gltf.scene} scale={1.5} />;
+    const laptopRef = useRef();
+
+    useFrame(() => {
+        if (laptopRef.current) {
+            laptopRef.current.rotation.y += 0.01; // Slow rotation
+        }
+    });
+
+    return <primitive ref={laptopRef} object={gltf.scene} scale={1.5} />;
 }
 
 export default function LaptopScene() {
