@@ -8,7 +8,7 @@ import NavBar from "./Components/Navbar";
 import Home from "./Pages/Home";
 import BlogList from "./Pages/Blogs/Blogs";
 import BlogDetail from "./Pages/Blogs/BlogDetail";
-
+import About from "./Pages/About"
 function App() {
   return (
     <Router>
@@ -48,6 +48,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/blogs" element={<BlogList />} />
             <Route path="/blog/:id" element={<BlogDetail />} />
+            <Route path="/about" element={<About />} />
           </Routes>
         </div>
       </div>
