@@ -47,6 +47,73 @@ git clone https://github.com/hasan-kayan/PortfolioWebsite
 cd portfolio-website
 
 
+---
+
+Project Structure
 
 
-        --legacy-peer-deps
+├──📂PortfolioWebsite
+├── eslint.config.js
+├── index.html
+├── package.json
+├── package-lock.json
+├── postcss.config.cjs
+├── 📂public
+│   ├── 📂models
+│   │   ├── bionic_arm.glb
+│   │   ├── 📂camera
+│   │   │   ├── AO_S_305_MT_02_4k.jpg
+│   │   │   ├── AO_S_305_MT_1_4k.jpg
+│   │   │   ├── S_305_MT.mtl
+│   │   │   ├── S_305_MT.obj
+│   │   │   ├── S_305_MT_phot1_BaseColor_4k.jpg
+│   │   │   ├── S_305_MT_phot1_Metallic_4k.jpg
+│   │   │   ├── S_305_MT_phot1_Normal_4k.jpg
+│   │   │   ├── S_305_MT_phot1_Roughness_4k.jpg
+│   │   │   ├── S_305_MT_phot2_BaseColor_4k.jpg
+│   │   │   └── S_305_MT_phot2_Normal_4k.jpg
+│   │   ├── cartoonish_clouds.glb
+│   │   ├── cloud.glb
+│   │   ├── esp32.glb
+│   │   ├── ivy.glb
+│   │   ├── laptop.glb
+│   │   ├── 📂stacks
+│   │   │   ├── cloud.glb
+│   │   │   ├── gopher.glb
+│   │   │   ├── javascript.glb
+│   │   │   ├── linux-char.glb
+│   │   │   ├── python.glb
+│   │   │   └── react_logo.glb
+│   │   └── yellow_flower.glb
+│   └── vite.svg
+├── README.md
+├── 📂src
+│   ├── App.css
+│   ├── App.jsx
+│   ├──📂 assets
+│   │   └── logo.jpg
+│   ├── 📂Components
+│   │   ├── Footer.jsx
+│   │   ├── 📂ModelComponents
+│   │   │   ├── CameraModel.jsx
+│   │   │   ├── ESP32Model.jsx
+│   │   │   └── LaptopModel.jsx
+│   │   ├── Navbar.jsx
+│   │   ├── ProjectCard.jsx
+│   │   ├── ProtectedPage.jsx
+│   │   └── Typer.jsx
+│   ├── index.css
+│   ├── main.jsx
+│   └── 📂Pages
+│       ├── About.jsx
+│       ├── 📂Admin
+│       │   ├── Admin.jsx
+│       │   └── Login.jsx
+│       ├── 📂Blogs
+│       │   ├── BlogDetail.jsx
+│       │   └── Blogs.jsx
+│       ├── Home.jsx
+│       └── 📂Projects
+│           └── Projects.jsx
+├── tailwind.config.js
+└── vite.config.js
