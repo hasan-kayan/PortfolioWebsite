@@ -27,7 +27,7 @@ const PortfolioViewer = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-5 rounded-lg">
+    <div className="flex flex-col items-center justify-center min-h-screen text-white p-5 rounded-lg">
       <h1 className="text-3xl font-bold mb-4">Portfolio PDF</h1>
 
       {loading && <CircularProgress color="secondary" />}

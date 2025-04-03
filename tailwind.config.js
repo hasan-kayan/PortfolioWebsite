@@ -20,33 +20,17 @@ export default {
       },
       fontFamily: {
           poppins: ['Poppins', 'sans-serif'],
+          eczar: ['Eczar', 'serif'],
       },
       extend: {
+        cursor: {
+            none: 'none',
+          },
           colors: {
-              appbgcolor: '#3d348b',
-              appbgcolorstart: '#1DBDE6',
-              appbgcolorend: '#F1515E',
-              navbarbgcolor:'#5e548e',
-              divbgcolor: '#191A1D',
-              divbgcoloropacity: 'rgba(24, 24, 27, 0.5)',
-              divbgcoloralt: '#202124',
-              strokecolor: '#3F3F46',
-              strokecoloralt: '#52525B',
-              h1textcolor: '#FFFFFF',
-              defaulttextcolor: '#FFFFFF',
-              inputtextcolor: '#A1A1AA',
-              inputcolor: '#202124',
-              inputhovercolor: '#343438',
-              loginbuttoncolor: '#00D11F',
-              loginbuttonhover: '#37E601',
-              buttoncolor: '#006FEE',
-              buttoncolorhover: '#005bc4',
-              buttoncolorhoveralt: '#004ea9',
-              buttongreenglowcolor: 'rgba(0, 209, 31, 0.4)',
-              alertColor: '#FF3F3F',
-              alertColorAlt: '#D32929',
-              alertColorGlow: 'rgba(255, 63, 63, 0.4)',
-              co2divbg: 'rgba(255, 63, 63, 0.5)',
+              appbgcolor: '#6B8A7A',
+              apptextcolor: '#1E1E2F',
+              
+              
           },
       },
 
