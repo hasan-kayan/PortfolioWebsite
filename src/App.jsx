@@ -7,7 +7,6 @@ import CustomCursor from "./Components/CustomCursor"; // <-- import
 // PAGES (ROUTES)
 import Home from "./Pages/Home";
 import BlogList from "./Pages/Blogs/Blogs";
-import BlogDetail from "./Pages/Blogs/BlogDetail";
 import About from "./Pages/About";
 import Projects from "./Pages/Projects/Projects";
 
@@ -33,7 +32,6 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/blogs" element={<BlogList />} />
-            <Route path="/blog/:id" element={<BlogDetail />} />
             <Route path="/about" element={<About />} />
             <Route path="/projects" element={<Projects />} />
 

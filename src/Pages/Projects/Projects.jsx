@@ -1,80 +1,44 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ProjectCard from "../../Components/ProjectCard";
 
-const projectData = [
-  {
-    title: "IoT Dashboard",
-    description: "React-based dashboard for MQTT device monitoring.",
-    tech: "React · Node.js · MQTT",
-    image: "/images/iot-dashboard.png",
-    link: "https://your-link.com",
-  },
-  {
-    title: "Smart Home Controller",
-    description: "Mobile app for controlling smart devices.",
-    tech: "React Native · Raspberry Pi",
-    image: "/images/smart-home.png",
-    link: "https://your-link.com",
-  },
-  {
-    title: "3D Portfolio",
-    description: "A Three.js-based 3D personal website.",
-    tech: "React · Three.js · Typescript",
-    image: "/images/3d-portfolio.png",
-    link: "https://your-link.com",
-  },
-  {
-    title: "Embedded Linux App",
-    description: "CLI and GUI tools for embedded boards.",
-    tech: "C++ · GTK · Yocto",
-    image: "/images/linux-app.png",
-    link: "https://your-link.com",
-  },
-  {
-    title: "Embedded Linux App",
-    description: "CLI and GUI tools for embedded boards.",
-    tech: "C++ · GTK · Yocto",
-    image: "/images/linux-app.png",
-    link: "https://your-link.com",
-  },
-  {
-    title: "Embedded Linux App",
-    description: "CLI and GUI tools for embedded boards.",
-    tech: "C++ · GTK · Yocto",
-    image: "/images/linux-app.png",
-    link: "https://your-link.com",
-  },
-  {
-    title: "Embedded Linux App",
-    description: "CLI and GUI tools for embedded boards.",
-    tech: "C++ · GTK · Yocto",
-    image: "/images/linux-app.png",
-    link: "https://your-link.com",
-  },
-  {
-    title: "Embedded Linux App",
-    description: "CLI and GUI tools for embedded boards.",
-    tech: "C++ · GTK · Yocto",
-    image: "/images/linux-app.png",
-    link: "https://your-link.com",
-  },
-  {
-    title: "Embedded Linux App",
-    description: "CLI and GUI tools for embedded boards.",
-    tech: "C++ · GTK · Yocto",
-    image: "/images/linux-app.png",
-    link: "https://your-link.com",
-  },
-];
-
 const Projects = () => {
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_PROJECT_URL}/get-all-projects`)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((data) => setProjects(data))
+      .catch((err) => console.error("Error fetching projects:", err))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
-    <section className="px-4 py-16 ">
-      <h2 className="text-3xl font-bold text-white mb-8 text-center">Projects</h2>
+    <section className="px-4 py-16">
+      <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Projects</h2>
       <div className="flex flex-wrap justify-center gap-8">
-        {projectData.map((project, index) => (
-          <ProjectCard key={index} {...project} />
-        ))}
+        {loading
+          ? Array.from({ length: 6 }).map((_, index) => (
+              <div
+                key={index}
+                className="w-full max-w-xs h-[300px] bg-gray-100 rounded-xl animate-pulse"
+              />
+            ))
+          : projects.map((project, index) => (
+              <ProjectCard
+                key={index}
+                title={project.title}
+                description={project.description}
+                tech={project.tech}
+                image={project.images?.[0] || "/images/fallback.png"}
+                link={project.link}
+              />
+            ))}
       </div>
     </section>
   );
