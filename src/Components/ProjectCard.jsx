@@ -1,29 +1,23 @@
-import { Card, CardContent } from "@mui/material";
-import { motion } from "framer-motion";
+import React from "react";
 
-const ProjectCard = ({ title, description, image }) => {
+const ProjectCard = ({ title, description, tech, image, link }) => {
   return (
-    <motion.div
-      whileHover={{ scale: 1.05, rotateX: 5, rotateY: 5 }}
-      whileTap={{ scale: 0.95 }}
-      transition={{ type: "spring", stiffness: 200, damping: 10 }}
-      className="perspective-1000"
-    >
-      <Card className="relative overflow-hidden rounded-2xl shadow-2xl bg-gray-800 text-white">
-        <motion.img
-          src={image}
-          alt={title}
-          className="w-full h-40 object-cover"
-          initial={{ scale: 1 }}
-          whileHover={{ scale: 1.1 }}
-          transition={{ duration: 0.3 }}
-        />
-        <CardContent className="p-4">
-          <h2 className="text-xl font-bold">{title}</h2>
-          <p className="text-gray-300 text-sm mt-2">{description}</p>
-        </CardContent>
-      </Card>
-    </motion.div>
+    <div className="bg-white rounded-2xl shadow-lg overflow-hidden transition hover:scale-105 hover:shadow-xl w-full max-w-xs">
+      <img src={image} alt={title} className="w-full h-40 object-cover" />
+      <div className="p-4">
+        <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
+        <p className="text-sm text-gray-500 mt-1">{tech}</p>
+        <p className="text-sm text-gray-600 mt-2">{description}</p>
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block mt-4 text-sm text-blue-600 hover:underline font-medium"
+        >
+          Read More →
+        </a>
+      </div>
+    </div>
   );
 };
 

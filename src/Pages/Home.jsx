@@ -18,6 +18,7 @@ import {
   SiPython,
   SiLinux,
   SiGooglecloud,
+  SiPostgresql,
 } from "react-icons/si";
 
 export default function Home() {
@@ -48,15 +49,21 @@ export default function Home() {
   const techIcons = [
     SiReact, SiNodedotjs, SiMongodb, SiExpress,
     SiDocker, SiGit, SiGo, SiC,
-    SiPython, SiLinux, SiGooglecloud
+    SiPython, SiLinux, SiGooglecloud, SiPostgresql,
   ];
 
 
   
 
   return (
+    
     <div className="relative w-full min-h-screen flex flex-col items-center justify-start p-10 font-eczar text-white">
- 
+      {/* Left dashed line */}
+        <div className="absolute left-0 top-0 h-full w-[2px] border-l-2 border-dashed border-white opacity-30 z-0" />
+
+        {/* Right dashed line */}
+        <div className="absolute right-0 top-0 h-full w-[2px] border-r-2 border-dashed border-white opacity-30 z-0" />
+
       {/* Top Section */}
       <motion.div
         className="w-full flex flex-col lg:flex-row items-center justify-center mb-16"
