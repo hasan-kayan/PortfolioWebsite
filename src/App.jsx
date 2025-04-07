@@ -10,6 +10,10 @@ import BlogList from "./Pages/Blogs/Blogs";
 import About from "./Pages/About";
 import Projects from "./Pages/Projects/Projects";
 
+
+//Managers
+import ProjectManager from "./Pages/manager/ProjectManager";
+
 function App() {
   return (
     <Router>
@@ -34,6 +38,7 @@ function App() {
             <Route path="/blogs" element={<BlogList />} />
             <Route path="/about" element={<About />} />
             <Route path="/projects" element={<Projects />} />
+            <Route path="/manager/projects" element={<ProjectManager />} />
 
           </Routes>
         </div>
