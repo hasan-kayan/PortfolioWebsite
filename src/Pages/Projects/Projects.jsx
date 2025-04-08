@@ -12,11 +12,13 @@ const Projects = () => {
           throw new Error(`HTTP error! Status: ${res.status}`);
         }
         return res.json();
+
       })
-      .then((data) => setProjects(data))
+      .then((data) => setProjects(data)) 
       .catch((err) => console.error("Error fetching projects:", err))
       .finally(() => setLoading(false));
   }, []);
+
 
   return (
     <section className="px-4 py-16">
@@ -29,16 +31,17 @@ const Projects = () => {
                 className="w-full max-w-xs h-[300px] bg-gray-100 rounded-xl animate-pulse"
               />
             ))
-          : projects.map((project, index) => (
-              <ProjectCard
-                key={index}
-                title={project.title}
-                description={project.description}
-                tech={project.tech}
-                image={project.images?.[0] || "/images/fallback.png"}
-                link={project.link}
-              />
-            ))}
+          :projects.map((project, index) => (
+            <ProjectCard
+              key={project._id || index}
+              title={project.title}
+              description={project.description}
+              tech={project.technologies.join(", ")}
+              image={project.images?.[0]?.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/') || "/images/fallback.png"}
+              link={project.demoLink || project.githubLink}
+            />
+          ))
+          }
       </div>
     </section>
   );
