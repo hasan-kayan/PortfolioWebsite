@@ -27,11 +27,8 @@ const ProjectManager = () => {
   const [token, setToken] = useState(localStorage.getItem("authToken") || "");
 
   useEffect(() => {
-    if (!token) {
-      loginAndFetch();
-    } else {
-      fetchProjects(token);
-    }
+    if (!token) loginAndFetch();
+    else fetchProjects(token);
   }, [token]);
 
   const loginAndFetch = async () => {
@@ -59,17 +56,13 @@ const ProjectManager = () => {
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setForm({
-      ...form,
-      [name]: name === "image" ? files[0] : value,
-    });
+    setForm({ ...form, [name]: name === "image" ? files[0] : value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     let imageUrl = "";
-
     if (form.image) {
       const fileName = `${Date.now()}_${form.image.name}`;
       const filePath = `Portfolio/Projects/${fileName}`;
@@ -83,34 +76,36 @@ const ProjectManager = () => {
       }
     }
 
-    const formData = new FormData();
-    formData.append("id", form.id);
-    formData.append("title", form.title);
-    formData.append("description", form.description);
-    formData.append("githubLink", form.githubLink);
-    formData.append("demoLink", form.demoLink);
-    formData.append("technologies", JSON.stringify(form.technologies.split(",")));
-
-    if (imageUrl) {
-      formData.append("imageUrl", imageUrl);
-    }
+    const payload = {
+      id: form.id,
+      title: form.title,
+      description: form.description,
+      githubLink: form.githubLink,
+      demoLink: form.demoLink,
+      technologies: form.technologies.split(',').map((t) => t.trim()),
+      images: imageUrl ? [imageUrl] : [],
+    };
 
     try {
       const res = editingId
-        ? await axios.put(`${API_URL}/update-projectby/${editingId}`, formData, {
+        ? await axios.put(`${API_URL}/update-projectby/${editingId}`, payload, {
             headers: { Authorization: `Bearer ${token}` },
           })
-        : await axios.post(`${API_URL}/create-project`, formData, {
+        : await axios.post(`${API_URL}/create-project`, payload, {
             headers: { Authorization: `Bearer ${token}` },
           });
 
       console.log("✅ Project saved:", res.data);
-      setForm(initialFormState);
-      setEditingId(null);
+      resetForm();
       fetchProjects();
     } catch (err) {
       console.error("❌ Submit error:", err?.response?.data || err.message);
     }
+  };
+
+  const resetForm = () => {
+    setForm(initialFormState);
+    setEditingId(null);
   };
 
   const handleEdit = (project) => {
@@ -140,27 +135,14 @@ const ProjectManager = () => {
     }
   };
 
-
-
-
   const uploadImageToGitHub = async (file, filePath) => {
-    console.log("sikik")
-  
-
     const API_ENDPOINT = `https://api.github.com/repos/hasan-kayan/Assets/contents/${filePath}`;
-    const githubToken = "TOKEN"
-      console.log("GitHub token:", githubToken);
-    if (!githubToken) {
-      console.error("❌ GitHub token is missing. Did you define VITE_GITHUB_TOKEN in .env?");
-      return Promise.reject("Missing GitHub token");
-    }
-  
-    const reader = new FileReader();
-  
+    const githubToken = "TOKEN";
+
     return new Promise((resolve, reject) => {
+      const reader = new FileReader();
       reader.onload = async () => {
         const content = reader.result.split(",")[1];
-  
         try {
           const res = await axios.put(
             API_ENDPOINT,
@@ -175,26 +157,19 @@ const ProjectManager = () => {
               },
             }
           );
-  
-          console.log("✅ GitHub upload success response:", res.data);
-  
-          if (!res.data?.content?.download_url) {
-            console.error("❌ No download_url in GitHub response:", res.data);
-            return reject("No download_url found");
-          }
-  
-          resolve(res.data.content.download_url);
+
+          const downloadUrl = res.data?.content?.download_url;
+          if (!downloadUrl) return reject("No download_url found");
+          resolve(downloadUrl);
         } catch (err) {
-          console.error("❌ GitHub API error:", err.response?.data || err.message);
           reject(err);
         }
       };
-  
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
   };
-  
+
   return (
     <div style={{ padding: 20, maxWidth: 600, margin: "0 auto" }}>
       <h2>Project Manager</h2>
