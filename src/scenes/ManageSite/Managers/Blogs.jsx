@@ -1,159 +1,214 @@
-import { useState, useEffect } from "react";
-import { Box, Button, TextField, Typography, Chip } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Header from "../../../components/Header";
-import axiosInstance from "../../../utils/axiosInstance"; // Import Axios instance
-const API_URL = process.env.REACT_APP_API_URL;
 
-const Blogs = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [title, setTitle] = useState("");
-  const [url, setUrl] = useState("");
-  const [content, setContent] = useState("");
-  const [tags, setTags] = useState([]);
-  const [images, setImages] = useState([]);
+const API_BASE = "https://portfoliobackend-311015061542.europe-west1.run.app";
+const API_URL = `${API_BASE}/api/website/project`;
+const LOGIN_URL = `${API_BASE}/api/auth/login`;
 
-  // Fetch Blogs on Component Mount
+const DEV_CREDENTIALS = {
+  username: "hasankayan2000@hotmail.com",
+  password: "IamFeelingGood!@",
+};
+
+const initialFormState = {
+  id: "",
+  title: "",
+  description: "",
+  technologies: "",
+  githubLink: "",
+  demoLink: "",
+  image: null,
+};
+
+const ProjectManager = () => {
+  const [projects, setProjects] = useState([]);
+  const [form, setForm] = useState(initialFormState);
+  const [editingId, setEditingId] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem("authToken") || "");
+
   useEffect(() => {
-    axios
-      .get(`${API_URL}/website/blog/get-all-blogs`)
-      .then(response => {
-        console.log("Fetched Blogs:", response.data);
-        setBlogs(response.data);
-      })
-      .catch(error => console.error("Error fetching blogs:", error));
-  }, []);
-  function generateUUID() {
-    let dt = new Date().getTime();
-    const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-      const r = (dt + Math.random() * 16) % 16 | 0;
-      dt = Math.floor(dt / 16);
-      return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
-    });
-    return uuid;
-  }
-  
-  console.log(generateUUID()); // Example Output: "3f2504e0-4f89-11d3-9a0c-0305e82c3301"
+    if (!token) {
+      loginAndFetch();
+    } else {
+      fetchProjects(token);
+    }
+  }, [token]);
 
-  const uploadImage = async (file) => {
+  const loginAndFetch = async () => {
+    try {
+      const res = await axios.post(LOGIN_URL, DEV_CREDENTIALS);
+      const newToken = res.data.token;
+      setToken(newToken);
+      localStorage.setItem("authToken", newToken);
+      fetchProjects(newToken);
+    } catch (err) {
+      console.error("Auto-login failed ❌", err);
+    }
+  };
+
+  const fetchProjects = async (authToken = token) => {
+    try {
+      const res = await axios.get(`${API_URL}/get-all-projects`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      setProjects(res.data);
+    } catch (err) {
+      console.error("Fetch error:", err);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    setForm({
+      ...form,
+      [name]: name === "image" ? files[0] : value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    let imageUrl = "";
+
+    if (form.image) {
+      const fileName = `${Date.now()}_${form.image.name}`;
+      const filePath = `Portfolio/Projects/${fileName}`;
+
+      try {
+        imageUrl = await uploadImageToGitHub(form.image, filePath);
+        console.log("✅ Uploaded Image URL:", imageUrl);
+      } catch (err) {
+        console.error("❌ GitHub upload error:", err);
+        return;
+      }
+    }
+
     const formData = new FormData();
-    formData.append("file", file);
-  
+    formData.append("id", form.id);
+    formData.append("title", form.title);
+    formData.append("description", form.description);
+    formData.append("githubLink", form.githubLink);
+    formData.append("demoLink", form.demoLink);
+    formData.append("technologies", JSON.stringify(form.technologies.split(",")));
+
+    if (imageUrl) {
+      formData.append("imageUrl", imageUrl);
+    }
+
     try {
-      const response = await axiosInstance.post("/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
-  
-      return response.data.url; // Assuming API returns { url: "https://example.com/image.jpg" }
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      return null; // Handle upload error
+      const res = editingId
+        ? await axios.put(`${API_URL}/update-projectby/${editingId}`, formData, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+        : await axios.post(`${API_URL}/create-project`, formData, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+      console.log("✅ Project saved:", res.data);
+      setForm(initialFormState);
+      setEditingId(null);
+      fetchProjects();
+    } catch (err) {
+      console.error("❌ Submit error:", err?.response?.data || err.message);
     }
   };
-  
-  const handleSubmit = async (event) => {
-    event.preventDefault(); // Prevent page reload
-  
-    const id = generateUUID();
-  
-    // Convert images to URLs before sending
-    const imageUrls = await Promise.all(images.map(uploadImage)); // Upload images and get URLs
-  
-    const blogData = { id, title, content, url, tags, images: imageUrls };
-    console.log("Submitting Blog:", blogData);
-  
+
+  const handleEdit = (project) => {
+    setForm({
+      id: project.id || "",
+      title: project.title,
+      description: project.description,
+      technologies: project.technologies?.join(",") || "",
+      githubLink: project.githubLink,
+      demoLink: project.demoLink,
+      image: null,
+    });
+    setEditingId(project._id);
+  };
+
+  const handleDelete = async (mongoId) => {
+    if (!mongoId) return console.error("❌ Missing _id for deletion.");
+
     try {
-      await axiosInstance.post("/website/blog/create-blog", blogData, {
-        headers: {
-          "Authorization": `Bearer ${localStorage.getItem("token")}`
+      const res = await axios.delete(`${API_URL}/delete-projectby/${mongoId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log("✅ Delete response:", res.data);
+      fetchProjects();
+    } catch (err) {
+      console.error("❌ Delete failed:", err?.response?.data || err.message);
+    }
+  };
+
+  const uploadImageToGitHub = async (file, filePath) => {
+    const API_ENDPOINT = "https://api.github.com/repos/hasan-kayan/Assets/contents/" + filePath;
+    const githubToken = import.meta.env.VITE_GITHUB_TOKEN;
+
+    const reader = new FileReader();
+
+    return new Promise((resolve, reject) => {
+      reader.onload = async () => {
+        const content = reader.result.split(",")[1];
+        try {
+          const res = await axios.put(
+            API_ENDPOINT,
+            {
+              message: "Upload project image: " + filePath,
+              content,
+            },
+            {
+              headers: {
+                Authorization: `token ${githubToken}`,
+                Accept: "application/vnd.github.v3+json",
+              },
+            }
+          );
+          resolve(res.data.content.download_url);
+        } catch (err) {
+          reject(err);
         }
-      });
-  
-      alert("Blog Saved Successfully!");
-      window.location.reload();
-    } catch (error) {
-      console.error("Error saving blog:", error.response ? error.response.data : error);
-      alert(`Error saving blog: ${error.response ? error.response.data.error : "Unknown error"}`);
-    }
-  };
-    
-  // Handle Blog Deletion
-  const handleDeleteBlog = async (id) => {
-    try {
-      await axios.delete(`${API_URL}/website/blog/delete-blog/${id}`);
-      alert("Blog Deleted Successfully!");
-      window.location.reload(); // Refresh to remove the blog
-    } catch (error) {
-      console.error("Error deleting blog:", error);
-      alert("Error deleting blog.");
-    }
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
   };
 
   return (
-    <Box m="20px">
-      <Header title="Manage Blogs" subtitle="Create, update, or delete blog entries." />
-
-      {/* Direct Form Without Formik */}
-      <form onSubmit={handleSubmit}>
-        <Box display="grid" gap="20px" gridTemplateColumns="repeat(4, minmax(0, 1fr))">
-          <TextField fullWidth variant="filled" label="Title"
-            value={title} onChange={(e) => setTitle(e.target.value)}
-            sx={{ gridColumn: "span 4" }} />
-
-          <TextField fullWidth variant="filled" label="URL"
-            value={url} onChange={(e) => setUrl(e.target.value)}
-            sx={{ gridColumn: "span 4" }} />
-
-          <input type="file" accept="image/*" multiple
-            onChange={(e) => setImages(Array.from(e.target.files))}
-            style={{ gridColumn: "span 4" }} />
-
-          <TextField fullWidth variant="filled" label="Content" multiline rows={4}
-            value={content} onChange={(e) => setContent(e.target.value)}
-            sx={{ gridColumn: "span 4" }} />
-
-          {/* Tags Input */}
-          <Box display="flex" flexWrap="wrap" gap="10px" sx={{ gridColumn: "span 4" }}>
-            {tags.map((tag, index) => (
-              <Chip key={index} label={tag} onDelete={() => setTags(tags.filter((_, i) => i !== index))} color="primary" />
-            ))}
-            <TextField variant="filled" placeholder="Add Tag" onKeyDown={(e) => {
-              if (e.key === "Enter" && e.target.value.trim() !== "") {
-                setTags([...tags, e.target.value.trim()]);
-                e.target.value = "";
-                e.preventDefault();
-              }
-            }} />
-          </Box>
-        </Box>
-
-        {/* Submit Button */}
-        <Box display="flex" justifyContent="end" mt="20px">
-          <Button type="submit" color="secondary" variant="contained">
-            Save Blog
-          </Button>
-        </Box>
+    <div style={{ padding: 20, maxWidth: 600, margin: "0 auto" }}>
+      <h2>Project Manager</h2>
+      <form onSubmit={handleSubmit} encType="multipart/form-data" style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        <input name="id" placeholder="Unique Project ID" value={form.id} onChange={handleChange} required />
+        <input name="title" placeholder="Title" value={form.title} onChange={handleChange} required />
+        <textarea name="description" placeholder="Description" value={form.description} onChange={handleChange} required />
+        <input name="technologies" placeholder="Technologies (comma-separated)" value={form.technologies} onChange={handleChange} />
+        <input name="githubLink" placeholder="GitHub Link" value={form.githubLink} onChange={handleChange} />
+        <input name="demoLink" placeholder="Demo Link" value={form.demoLink} onChange={handleChange} />
+        <input type="file" name="image" accept="image/*" onChange={handleChange} />
+        <button type="submit">{editingId ? "Update" : "Create"} Project</button>
       </form>
 
-      {/* Existing Blogs Section */}
-      <Box mt="40px">
-        <Typography variant="h4" mb="10px">Existing Blogs</Typography>
-        <Box display="flex" flexWrap="wrap" gap="20px">
-          {blogs.map((blog, index) => (
-            <Box key={index} width="250px" p="10px" bgcolor="#f5f5f5" borderRadius="10px"
-              sx={{ transition: "0.3s", '&:hover': { transform: "scale(1.05)", boxShadow: "0px 0px 10px rgba(0,0,0,0.2)" } }}>
-              
-              <img src={blog.images?.[0]} alt={blog.title} width="100%" style={{ borderRadius: "10px" }} />
-              <Typography variant="h6" fontWeight="bold">{blog.title}</Typography>
-              <Typography variant="body2" color="gray">{blog.content.substring(0, 50)}...</Typography>
-              <Typography variant="body2" color="blue" onClick={() => window.open(blog.url, "_blank")}>Read More</Typography>
-              <Button onClick={() => handleDeleteBlog(blog.id)} color="error" size="small">Delete</Button>
-            </Box>
-          ))}
-        </Box>
-      </Box>
-    </Box>
+      <ul style={{ marginTop: 30, padding: 0, listStyle: "none" }}>
+        {projects.map((project) => (
+          <li key={project._id} style={{ marginBottom: 30, paddingBottom: 15, borderBottom: "1px solid #ccc" }}>
+            <strong>{project.title}</strong>
+            <p>{project.description}</p>
+            <p><b>Tech:</b> {project.technologies?.join(", ")}</p>
+            <a href={project.githubLink} target="_blank" rel="noopener noreferrer">GitHub</a> |{' '}
+            <a href={project.demoLink} target="_blank" rel="noopener noreferrer">Demo</a>
+            {project.images?.length > 0 && (
+              <div>
+                <img src={project.images[0]} alt="project" style={{ width: 100, marginTop: 10 }} />
+              </div>
+            )}
+            <div style={{ marginTop: 10 }}>
+              <button onClick={() => handleEdit(project)} style={{ marginRight: 10 }}>Edit</button>
+              <button onClick={() => handleDelete(project._id)}>Delete</button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 
-export default Blogs;
+export default ProjectManager;

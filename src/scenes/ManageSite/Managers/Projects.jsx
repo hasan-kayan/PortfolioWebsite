@@ -1,154 +1,236 @@
-import { Box, Button, TextField } from "@mui/material";
-import { Formik } from "formik";
-import * as yup from "yup";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import Header from "../../../components/Header";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
-const Projects = () => {
-  const isNonMobile = useMediaQuery("(min-width:600px)");
+const API_BASE = "https://portfoliobackend-311015061542.europe-west1.run.app";
+const API_URL = `${API_BASE}/api/website/project`;
+const LOGIN_URL = `${API_BASE}/api/auth/login`;
 
-  const handleFormSubmit = (values) => {
-    console.log(values);
+const DEV_CREDENTIALS = {
+  username: "hasankayan2000@hotmail.com",
+  password: "IamFeelingGood!@",
+};
+
+const initialFormState = {
+  id: "",
+  title: "",
+  description: "",
+  technologies: "",
+  githubLink: "",
+  demoLink: "",
+  image: null,
+};
+
+const ProjectManager = () => {
+  const [projects, setProjects] = useState([]);
+  const [form, setForm] = useState(initialFormState);
+  const [editingId, setEditingId] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem("authToken") || "");
+
+  useEffect(() => {
+    if (!token) {
+      loginAndFetch();
+    } else {
+      fetchProjects(token);
+    }
+  }, [token]);
+
+  const loginAndFetch = async () => {
+    try {
+      const res = await axios.post(LOGIN_URL, DEV_CREDENTIALS);
+      const newToken = res.data.token;
+      setToken(newToken);
+      localStorage.setItem("authToken", newToken);
+      fetchProjects(newToken);
+    } catch (err) {
+      console.error("Auto-login failed ❌", err);
+    }
   };
 
-  return (
-    <Box m="20px">
-      <Header title="Add New Blog" subtitle="Add a new blog in certain format." />
+  const fetchProjects = async (authToken = token) => {
+    try {
+      const res = await axios.get(`${API_URL}/get-all-projects`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      setProjects(res.data);
+    } catch (err) {
+      console.error("Fetch error:", err);
+    }
+  };
 
-      <Formik
-        onSubmit={handleFormSubmit}
-        initialValues={initialValues}
-        validationSchema={checkoutSchema}
-      >
-        {({
-          values,
-          errors,
-          touched,
-          handleBlur,
-          handleChange,
-          handleSubmit,
-        }) => (
-          <form onSubmit={handleSubmit}>
-            <Box
-              display="grid"
-              gap="30px"
-              gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-              sx={{
-                "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
-              }}
-            >
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Title"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.firstName}
-                name="title"
-                error={!!touched.firstName && !!errors.firstName}
-                helperText={touched.firstName && errors.firstName}
-                sx={{ gridColumn: "span 2" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Image URL"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.lastName}
-                name="imageurl"
-                error={!!touched.lastName && !!errors.lastName}
-                helperText={touched.lastName && errors.lastName}
-                sx={{ gridColumn: "span 2" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Email"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.email}
-                name="email"
-                error={!!touched.email && !!errors.email}
-                helperText={touched.email && errors.email}
-                sx={{ gridColumn: "span 4" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Contact Number"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.contact}
-                name="contact"
-                error={!!touched.contact && !!errors.contact}
-                helperText={touched.contact && errors.contact}
-                sx={{ gridColumn: "span 4" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Address 1"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.address1}
-                name="address1"
-                error={!!touched.address1 && !!errors.address1}
-                helperText={touched.address1 && errors.address1}
-                sx={{ gridColumn: "span 4" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Address 2"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.address2}
-                name="address2"
-                error={!!touched.address2 && !!errors.address2}
-                helperText={touched.address2 && errors.address2}
-                sx={{ gridColumn: "span 4" }}
-              />
-            </Box>
-            <Box display="flex" justifyContent="end" mt="20px">
-              <Button type="submit" color="secondary" variant="contained">
-                Create New User
-              </Button>
-            </Box>
-          </form>
-        )}
-      </Formik>
-    </Box>
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    setForm({
+      ...form,
+      [name]: name === "image" ? files[0] : value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    let imageUrl = "";
+
+    if (form.image) {
+      const fileName = `${Date.now()}_${form.image.name}`;
+      const filePath = `Portfolio/Projects/${fileName}`;
+
+      try {
+        imageUrl = await uploadImageToGitHub(form.image, filePath);
+        console.log("✅ Uploaded Image URL:", imageUrl);
+      } catch (err) {
+        console.error("❌ GitHub upload error:", err);
+        return;
+      }
+    }
+
+    const formData = new FormData();
+    formData.append("id", form.id);
+    formData.append("title", form.title);
+    formData.append("description", form.description);
+    formData.append("githubLink", form.githubLink);
+    formData.append("demoLink", form.demoLink);
+    formData.append("technologies", JSON.stringify(form.technologies.split(",")));
+
+    if (imageUrl) {
+      formData.append("imageUrl", imageUrl);
+    }
+
+    try {
+      const res = editingId
+        ? await axios.put(`${API_URL}/update-projectby/${editingId}`, formData, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+        : await axios.post(`${API_URL}/create-project`, formData, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+      console.log("✅ Project saved:", res.data);
+      setForm(initialFormState);
+      setEditingId(null);
+      fetchProjects();
+    } catch (err) {
+      console.error("❌ Submit error:", err?.response?.data || err.message);
+    }
+  };
+
+  const handleEdit = (project) => {
+    setForm({
+      id: project.id || "",
+      title: project.title,
+      description: project.description,
+      technologies: project.technologies?.join(",") || "",
+      githubLink: project.githubLink,
+      demoLink: project.demoLink,
+      image: null,
+    });
+    setEditingId(project._id);
+  };
+
+  const handleDelete = async (mongoId) => {
+    if (!mongoId) return console.error("❌ Missing _id for deletion.");
+
+    try {
+      const res = await axios.delete(`${API_URL}/delete-projectby/${mongoId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log("✅ Delete response:", res.data);
+      fetchProjects();
+    } catch (err) {
+      console.error("❌ Delete failed:", err?.response?.data || err.message);
+    }
+  };
+
+
+
+
+  const uploadImageToGitHub = async (file, filePath) => {
+    console.log("sikik")
+  
+
+    const API_ENDPOINT = `https://api.github.com/repos/hasan-kayan/Assets/contents/${filePath}`;
+    const githubToken = "TOKEN"
+      console.log("GitHub token:", githubToken);
+    if (!githubToken) {
+      console.error("❌ GitHub token is missing. Did you define VITE_GITHUB_TOKEN in .env?");
+      return Promise.reject("Missing GitHub token");
+    }
+  
+    const reader = new FileReader();
+  
+    return new Promise((resolve, reject) => {
+      reader.onload = async () => {
+        const content = reader.result.split(",")[1];
+  
+        try {
+          const res = await axios.put(
+            API_ENDPOINT,
+            {
+              message: `Upload project image: ${filePath}`,
+              content,
+            },
+            {
+              headers: {
+                Authorization: `token ${githubToken}`,
+                Accept: "application/vnd.github.v3+json",
+              },
+            }
+          );
+  
+          console.log("✅ GitHub upload success response:", res.data);
+  
+          if (!res.data?.content?.download_url) {
+            console.error("❌ No download_url in GitHub response:", res.data);
+            return reject("No download_url found");
+          }
+  
+          resolve(res.data.content.download_url);
+        } catch (err) {
+          console.error("❌ GitHub API error:", err.response?.data || err.message);
+          reject(err);
+        }
+      };
+  
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+  
+  return (
+    <div style={{ padding: 20, maxWidth: 600, margin: "0 auto" }}>
+      <h2>Project Manager</h2>
+      <form onSubmit={handleSubmit} encType="multipart/form-data" style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        <input name="id" placeholder="Unique Project ID" value={form.id} onChange={handleChange} required />
+        <input name="title" placeholder="Title" value={form.title} onChange={handleChange} required />
+        <textarea name="description" placeholder="Description" value={form.description} onChange={handleChange} required />
+        <input name="technologies" placeholder="Technologies (comma-separated)" value={form.technologies} onChange={handleChange} />
+        <input name="githubLink" placeholder="GitHub Link" value={form.githubLink} onChange={handleChange} />
+        <input name="demoLink" placeholder="Demo Link" value={form.demoLink} onChange={handleChange} />
+        <input type="file" name="image" accept="image/*" onChange={handleChange} />
+        <button type="submit">{editingId ? "Update" : "Create"} Project</button>
+      </form>
+
+      <ul style={{ marginTop: 30, padding: 0, listStyle: "none" }}>
+        {projects.map((project) => (
+          <li key={project._id} style={{ marginBottom: 30, paddingBottom: 15, borderBottom: "1px solid #ccc" }}>
+            <strong>{project.title}</strong>
+            <p>{project.description}</p>
+            <p><b>Tech:</b> {project.technologies?.join(", ")}</p>
+            <a href={project.githubLink} target="_blank" rel="noopener noreferrer">GitHub</a> |{' '}
+            <a href={project.demoLink} target="_blank" rel="noopener noreferrer">Demo</a>
+            {project.images?.length > 0 && (
+              <div>
+                <img src={project.images[0]} alt="project" style={{ width: 100, marginTop: 10 }} />
+              </div>
+            )}
+            <div style={{ marginTop: 10 }}>
+              <button onClick={() => handleEdit(project)} style={{ marginRight: 10 }}>Edit</button>
+              <button onClick={() => handleDelete(project.id)}>Delete</button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 
-const phoneRegExp =
-  /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
-
-const checkoutSchema = yup.object().shape({
-  firstName: yup.string().required("required"),
-  lastName: yup.string().required("required"),
-  email: yup.string().email("invalid email").required("required"),
-  contact: yup
-    .string()
-    .matches(phoneRegExp, "Phone number is not valid")
-    .required("required"),
-  address1: yup.string().required("required"),
-  address2: yup.string().required("required"),
-});
-const initialValues = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  contact: "",
-  address1: "",
-  address2: "",
-};
-
-export default Projects;
+export default ProjectManager;
