@@ -53,15 +53,18 @@ Project Structure
 
 
 ├──📂PortfolioWebsite
+.
 ├── eslint.config.js
+├── firebase.json
 ├── index.html
 ├── package.json
 ├── package-lock.json
 ├── postcss.config.cjs
 ├── 📂public
+│   ├── index.html
 │   ├── 📂models
 │   │   ├── bionic_arm.glb
-│   │   ├── 📂camera
+│   │   ├── camera
 │   │   │   ├── AO_S_305_MT_02_4k.jpg
 │   │   │   ├── AO_S_305_MT_1_4k.jpg
 │   │   │   ├── S_305_MT.mtl
@@ -77,7 +80,7 @@ Project Structure
 │   │   ├── esp32.glb
 │   │   ├── ivy.glb
 │   │   ├── laptop.glb
-│   │   ├── 📂stacks
+│   │   ├── stacks
 │   │   │   ├── cloud.glb
 │   │   │   ├── gopher.glb
 │   │   │   ├── javascript.glb
@@ -85,34 +88,51 @@ Project Structure
 │   │   │   ├── python.glb
 │   │   │   └── react_logo.glb
 │   │   └── yellow_flower.glb
+│   ├── texture.png
 │   └── vite.svg
 ├── README.md
 ├── 📂src
 │   ├── App.css
 │   ├── App.jsx
-│   ├──📂 assets
-│   │   └── logo.jpg
-│   ├── 📂Components
+│   ├── 📂assets
+│   │   ├── car.png
+│   │   ├── logo.jpg
+│   │   └── 📂tech
+│   │       ├── git.png
+│   │       └── react.png
+│   ├──📂 Components
+│   │   ├── CustomCursor.jsx
 │   │   ├── Footer.jsx
 │   │   ├── 📂ModelComponents
 │   │   │   ├── CameraModel.jsx
 │   │   │   ├── ESP32Model.jsx
 │   │   │   └── LaptopModel.jsx
 │   │   ├── Navbar.jsx
+│   │   ├── PrivateRoute.jsx
 │   │   ├── ProjectCard.jsx
 │   │   ├── ProtectedPage.jsx
+│   │   ├── RoadScene.jsx
 │   │   └── Typer.jsx
+│   ├── 📂context
+│   │   └── AuthContext.jsx
+│   ├── 📂hooks
+│   │   └── useIsTouchDevice.js
 │   ├── index.css
 │   ├── main.jsx
-│   └── 📂Pages
+│   └──📂 Pages
 │       ├── About.jsx
-│       ├── 📂Admin
-│       │   ├── Admin.jsx
-│       │   └── Login.jsx
+│       ├── 📂AdminPanel
+│       │   ├── 📂AboutManager
+│       │   │   └── AboutManager.jsx
+│       │   ├── 📂BlogManager
+│       │   │   └── BlogManager.jsx
+│       │   ├── 📂Dashboard.jsx
+│       │   └── 📂ProjectManager
+│       │       └── ProjectManager.jsx
 │       ├── 📂Blogs
-│       │   ├── BlogDetail.jsx
 │       │   └── Blogs.jsx
 │       ├── Home.jsx
+│       ├── Login.jsx
 │       └── 📂Projects
 │           └── Projects.jsx
 ├── tailwind.config.js
