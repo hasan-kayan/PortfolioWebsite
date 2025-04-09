@@ -27,22 +27,24 @@ const PortfolioViewer = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen text-white p-5 rounded-lg">
-      <h1 className="text-3xl font-bold mb-4">Portfolio PDF</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen text-white px-2 sm:px-4 py-6 bg-appbgcolor">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center">Portfolio PDF</h1>
 
       {loading && <CircularProgress color="secondary" />}
       {error && <Alert severity="error">{error}</Alert>}
 
       {pdfUrl && (
-        <div className="w-full max-w-3xl bg-white p-4 rounded-lg shadow-lg">
-          <PDFViewer
-            document={{
-              url: pdfUrl,
-            }}
-            canvasCss="shadow-lg rounded-lg"
-          />
+        <div className="w-full max-w-4xl bg-white rounded-lg shadow-lg p-3 sm:p-5 overflow-hidden">
+          {/* PDF Viewer */}
+          <div className="w-full overflow-x-auto">
+            <PDFViewer
+              document={{ url: pdfUrl }}
+              canvasCss="w-full max-w-full h-auto"
+            />
+          </div>
 
-          <div className="flex justify-center mt-4">
+          {/* Download Button */}
+          <div className="flex justify-center mt-6">
             <Button
               variant="contained"
               color="primary"
