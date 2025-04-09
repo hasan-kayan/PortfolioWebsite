@@ -10,13 +10,11 @@ import BlogList from "./Pages/Blogs/Blogs";
 import About from "./Pages/About";
 import Projects from "./Pages/Projects/Projects";
 
-
-
 function App() {
   return (
     <Router>
       <div
-        className="relative min-h-screen min-w-full bg-appbgcolor cursor-none"
+        className="flex flex-col min-h-screen bg-appbgcolor cursor-none"
         style={{
           backgroundImage: "url('/texture.png')",
           backgroundRepeat: "repeat",
@@ -24,25 +22,25 @@ function App() {
           backgroundBlendMode: "overlay",
         }}
       >
-        {/* Sticky Navbar wrapper */}
+        {/* Navbar */}
         <div className="sticky top-0 z-50">
           <NavBar />
         </div>
 
-        {/* Page Content */}
-        <div className="container mx-auto p-4 relative z-10">
+        {/* Main Content */}
+        <div className="container mx-auto p-4 flex-grow relative z-10">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/blogs" element={<BlogList />} />
             <Route path="/about" element={<About />} />
             <Route path="/projects" element={<Projects />} />
-
           </Routes>
         </div>
-          {/* Sticky Navbar wrapper */}
-          <div className="sticky bottom-0 z-50">
-          <Footer />
-        </div>
+
+        {/* Footer */}
+        <Footer />
+
+        {/* Custom Cursor */}
         <CustomCursor />
       </div>
     </Router>

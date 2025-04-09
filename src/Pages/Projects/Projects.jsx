@@ -22,7 +22,7 @@ const Projects = () => {
 
   return (
     <section className="px-4 py-16">
-      <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Projects</h2>
+      <h2 className="text-3xl font-bold text-white mb-8 text-center">My Projects</h2>
       <div className="flex flex-wrap justify-center gap-8">
         {loading
           ? Array.from({ length: 6 }).map((_, index) => (
