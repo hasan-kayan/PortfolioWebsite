@@ -36,6 +36,7 @@ const BlogList = () => {
           justifyContent: "space-between",
           boxShadow: 3,
           borderRadius: 2,
+          backgroundColor: "rgba(255, 255, 255, 0.1)", // Semi-transparent white
         }}
       >
         <Skeleton variant="rectangular" width="100%" height={160} />
@@ -71,7 +72,7 @@ const BlogList = () => {
               justifyContent: "space-between",
               boxShadow: 4,
               borderRadius: 3,
-              backgroundColor: "#fff",
+              backgroundColor: "rgba(255, 255, 255, 0.1)", // Semi-transparent white
             }}
           >
             <CardMedia
@@ -84,8 +85,8 @@ const BlogList = () => {
               <Typography
                 variant="h6"
                 component="div"
+                color="white"
                 sx={{
-                  color: "#1e1e1e",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
@@ -95,7 +96,7 @@ const BlogList = () => {
               </Typography>
               <Typography
                 variant="body2"
-                color="text.secondary"
+                color="white"
                 sx={{
                   mt: 1,
                   overflow: "hidden",
@@ -114,7 +115,7 @@ const BlogList = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 variant="outlined"
-                color="primary"
+                sx={{ color: "white", borderColor: "white" }}
               >
                 Read More
               </Button>
@@ -123,7 +124,7 @@ const BlogList = () => {
                   href={blog.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-700 hover:text-black"
+                  style={{ color: "white" }}
                 >
                   <FaMedium size={22} />
                 </a>
@@ -136,7 +137,9 @@ const BlogList = () => {
 
   return (
     <div className="container mx-auto p-5">
-      <h1 className="text-3xl font-bold mb-5 text-gray-900">Blog Posts</h1>
+      <Typography variant="h3" component="h1" color="white" gutterBottom>
+        Blog Posts
+      </Typography>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading ? renderSkeleton() : renderBlogs()}
       </div>
