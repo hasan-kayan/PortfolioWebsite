@@ -3,7 +3,11 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 // COMPONENTS
 import NavBar from "./Components/Navbar";
 import Footer from "./Components/Footer";
-import CustomCursor from "./Components/CustomCursor"; // <-- import
+import CustomCursor from "./Components/CustomCursor";
+
+// HOOK
+import useIsTouchDevice from "./hooks/useIsTouchDevice";
+
 // PAGES (ROUTES)
 import Home from "./Pages/Home";
 import BlogList from "./Pages/Blogs/Blogs";
@@ -11,6 +15,8 @@ import About from "./Pages/About";
 import Projects from "./Pages/Projects/Projects";
 
 function App() {
+  const isTouchDevice = useIsTouchDevice();
+
   return (
     <Router>
       <div
@@ -40,8 +46,8 @@ function App() {
         {/* Footer */}
         <Footer />
 
-        {/* Custom Cursor */}
-        <CustomCursor />
+        {/* Custom Cursor - only on non-touch devices */}
+        {!isTouchDevice && <CustomCursor />}
       </div>
     </Router>
   );

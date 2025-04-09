@@ -148,21 +148,21 @@ export default function Home() {
         transition={{ duration: 0.8 }}
         className="w-full max-w-6xl flex flex-col lg:flex-row items-start justify-between p-10 mt-10 bg-white/10 rounded-2xl shadow-lg backdrop-blur-md border border-white/20"
       >
-        {/* Left - Tech Icons */}
-        <div className="grid grid-cols-3 sm:grid-cols-4 gap-8">
-          {techIcons.map((Icon, idx) => (
-            <motion.div
-              key={idx}
-              className="w-24 h-24 flex items-center justify-center rounded-full bg-black/20 hover:scale-110 transition-transform duration-300 hover:bg-white/10"
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: idx * 0.1 }}
-            >
-              <Icon size={48} />
-            </motion.div>
-          ))}
-        </div>
+       <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4 w-full justify-items-center">
+  {techIcons.map((Icon, idx) => (
+    <motion.div
+      key={idx}
+      className="w-20 h-20 flex items-center justify-center rounded-full bg-black/20 hover:scale-110 transition-transform duration-300 hover:bg-white/10"
+      initial={{ opacity: 0, scale: 0.8 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay: idx * 0.1 }}
+    >
+      <Icon size={36} />
+    </motion.div>
+  ))}
+</div>
+
 
         {/* Right - Tech Tags + Description */}
         <div className="pl-10 mt-10 lg:mt-0 text-white max-w-md space-y-3">
