@@ -23,11 +23,9 @@ export default {
           eczar: ['Eczar', 'serif'],
       },
       extend: {
-        cursor: {
-            none: 'none',
-          },
+       
           colors: {
-              appbgcolor: '#6B8A7A',
+              appbgcolor: '#0d1321',
               apptextcolor: '#1E1E2F',
               
               
