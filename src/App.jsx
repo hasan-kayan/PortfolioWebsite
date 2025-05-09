@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from "react-route
 // COMPONENTS
 import NavBar from "./Components/Navbar";
 import Footer from "./Components/Footer";
-import CustomCursor from "./Components/CustomCursor";
 
 // HOOK
 import useIsTouchDevice from "./hooks/useIsTouchDevice";
@@ -32,7 +31,7 @@ function AppWrapper() {
 
   return (
     <div
-      className="flex flex-col min-h-screen bg-appbgcolor cursor-none"
+      className="flex flex-col min-h-screen bg-appbgcolor "
       style={{
         backgroundImage: "url('/texture.png')",
         backgroundRepeat: "repeat",
@@ -94,8 +93,7 @@ function AppWrapper() {
       {/* Footer */}
       {!shouldHideUI && <Footer />}
 
-      {/* Custom Cursor */}
-      {!isTouchDevice && <CustomCursor />}
+     
     </div>
   );
 }

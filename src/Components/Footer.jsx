@@ -10,7 +10,7 @@ export default function Footer() {
             href="https://www.linkedin.com/in/hasan-kayan-37a59319b/"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-white hover:text-white transition duration-200 cursor-none"
+            className="text-white hover:text-white transition duration-200 "
             aria-label="LinkedIn"
           >
             <FaLinkedin size={20} />
@@ -19,7 +19,7 @@ export default function Footer() {
             href="https://github.com/hasan-kayan"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-white hover:text-white transition duration-200 cursor-none"
+            className="text-white hover:text-white transition duration-200 "
             aria-label="GitHub"
           >
             <FaGithub size={20} />
@@ -28,7 +28,7 @@ export default function Footer() {
             href="https://medium.com/@hasankayan"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-white hover:text-white transition duration-200 cursor-none"
+            className="text-white hover:text-white transition duration-200"
             aria-label="Medium"
           >
             <FaMedium size={20} />

@@ -15,8 +15,8 @@ export default function NavBar() {
   const location = useLocation();
 
   return (
-    <nav className="bg-appbgcolor cursor-none">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 cursor-none">
+    <nav className="bg-appbgcolor ">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 ">
         <div className="flex h-14 items-center justify-center">
           {/* Navigation links */}
           <div className="flex space-x-4">
@@ -28,7 +28,7 @@ export default function NavBar() {
                   location.pathname === item.href
                     ? "text-white font-semibold"
                     : "text-gray-300 hover:text-white",
-                  "px-4 py-2 rounded-md text-sm transition duration-200 cursor-none"
+                  "px-4 py-2 rounded-md text-sm transition duration-200 "
                 )}
               >
                 {item.name}
