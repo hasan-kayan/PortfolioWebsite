@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- ──────────────── Primary SEO ──────────────── -->
+    <title>Hasan Kayan — Full-Stack & Embedded Systems Engineer</title>
+    <meta name="description"
+          content="Portfolio of Hasan Kayan, a software engineer specializing in full-stack web, embedded systems, and cloud solutions. See projects, blog posts and get in touch." />
+    <meta name="keywords"
+          content="Hasan Kayan, software engineer, full-stack developer, embedded systems, React, Rust, Linux, cloud, IoT, portfolio" />
+    <meta name="author" content="Hasan Kayan" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://www.hasankayan.com/" />
+
+    <!-- ──────────────── Open Graph / Facebook ──────────────── -->
+    <meta property="og:type"        content="website" />
+    <meta property="og:url"         content="https://www.hasankayan.com/" />
+    <meta property="og:title"       content="Hasan Kayan — Full-Stack & Embedded Systems Engineer" />
+    <meta property="og:description" content="Portfolio of Hasan Kayan, a software engineer specializing in full-stack web, embedded systems, and cloud solutions." />
+    <!-- Recommended: 1200×630 px image -->
+    <meta property="og:image"       content="https://www.hasankayan.com/og-cover.png" />
+
+    <!-- ──────────────── Twitter Card ──────────────── -->
+    <meta property="twitter:card"        content="summary_large_image" />
+    <meta property="twitter:url"         content="https://www.hasankayan.com/" />
+    <meta property="twitter:title"       content="Hasan Kayan — Full-Stack & Embedded Systems Engineer" />
+    <meta property="twitter:description" content="Portfolio of Hasan Kayan, a software engineer specializing in full-stack web, embedded systems, and cloud solutions." />
+    <meta property="twitter:image"       content="https://www.hasankayan.com/og-cover.png" />
+
+    <!-- ──────────────── Icons & PWA helpers ──────────────── -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <!-- keep Vite’s default SVG as a fallback -->
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+
+    <!-- ──────────────── Structured Data (JSON-LD) ──────────────── -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Hasan Kayan",
+      "url": "https://www.hasankayan.com/",
+      "description": "Software engineer specializing in full-stack, embedded systems, and cloud solutions.",
+      "jobTitle": "Software Engineer",
+      "image": "https://www.hasankayan.com/me.jpg",
+      "sameAs": [
+        "https://github.com/hasan-kayan",
+        "https://www.linkedin.com/in/hasan-kayan-37a59319b/"
+      ]
+    }
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+<script>
+  // Service Worker registration for PWA
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then(registration => {
+          console.log('Service Worker registered with scope:', registration.scope);
+        })
+        .catch(error => {
+          console.error('Service Worker registration failed:', error);
+        });
+    });
+  }
+</script>
+<script>
+  // Google Analytics setup
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX'); // Replace with your Google Analytics ID
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  // Cookie Consent setup
+  window.cookieconsent.initialise({
+    "palette": {
+      "popup": {
+        "background": "#0f172a",
+        "text": "#ffffff"
+      },
+      "button": {
+        "background": "#4f46e5",
+        "text": "#ffffff"
+      }
+    },
+    "theme": "edgeless",
+    "content": {
+      "message": "This website uses cookies to ensure you get the best experience on our website.",
+      "dismiss": "Got it!",
+      "link": "Learn more",
+      "href": "/privacy-policy.html"
+    }
+  });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.js"></script>
+<script>
+  // Font Awesome setup
+  (function(d) {
+    var s = d.createElement("script");
+    s.src = "https://kit.fontawesome.com/a076d05399.js";
+    s.crossOrigin = "anonymous";
+    d.head.appendChild(s);
+  })(document);
+</script> 
