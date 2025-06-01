@@ -19,30 +19,33 @@ const LoginPage = () => {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const response = await axios.post(`${import.meta.env.VITE_AUTH_URL}/login`, {
-        email,
-        password
-      });
-      
-      if (response.data && response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        navigate('/admin');
-      } else {
-        setError('Authentication failed. Please check your credentials.');
-      }
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
-      console.error('Login error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  e.preventDefault();
+  setLoading(true);
+  setError(null);
 
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_AUTH_URL}/login`,
+      {
+        username: email.trim(),   // SUNUCU BUNU BEKLİYOR
+        password,
+      }
+    );
+
+    const { token } = response.data || {};
+    if (token) {
+      localStorage.setItem('token', token);
+      navigate('/admin');
+    } else {
+      setError('Authentication failed. Please check your credentials.');
+    }
+  } catch (err: any) {
+    setError(err.response?.data?.message || 'Login failed. Please try again.');
+    console.error('Login error:', err);
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="flex items-center justify-center min-h-screen pt-24 pb-16">
       <motion.div 
