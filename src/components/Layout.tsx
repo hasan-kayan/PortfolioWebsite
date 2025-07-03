@@ -1,13 +1,17 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { motion } from 'framer-motion';
 
 const Layout = () => {
+  const { pathname } = useLocation();
+  const isAdmin = pathname.startsWith('/admin');      // true → gizle
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-900 text-white">
-      <Navbar />
-      <motion.main 
+      {!isAdmin && <Navbar />}
+
+      <motion.main
         className="flex-grow"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -16,7 +20,8 @@ const Layout = () => {
       >
         <Outlet />
       </motion.main>
-      <Footer />
+
+      {!isAdmin && <Footer />}
     </div>
   );
 };
