@@ -1,17 +1,17 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Cpu, FileText, FolderOpen, LogOut } from 'lucide-react';
+import { Cpu, FileText, FolderOpen, LogOut, ChevronDown, ChevronUp, LayoutDashboard } from 'lucide-react';
 
 const AdminPage = () => {
   const navigate = useNavigate();
-  
+  const [isPortfolioOpen, setIsPortfolioOpen] = useState(true);
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/login');
   };
 
-  // Set page title
   useEffect(() => {
     document.title = 'Admin Dashboard | Hasan Kayan';
     return () => {
@@ -29,7 +29,6 @@ const AdminPage = () => {
           transition={{ duration: 0.5 }}
         >
           <h1 className="text-3xl md:text-4xl font-bold mb-2">Admin Dashboard</h1>
-          <p className="text-xl text-gray-400">Manage your portfolio content here</p>
         </motion.div>
         
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -42,48 +41,67 @@ const AdminPage = () => {
           >
             <div className="bg-gray-800 rounded-xl shadow-lg p-6">
               <div className="flex flex-col space-y-2">
-                <NavLink 
-                  to="/admin/projects"
-                  className={({ isActive }) => 
-                    `flex items-center gap-3 p-3 rounded-lg transition-colors ${
-                      isActive 
-                        ? 'bg-indigo-900/50 text-indigo-300' 
-                        : 'hover:bg-gray-700 text-gray-300'
-                    }`
-                  }
-                >
-                  <FolderOpen size={20} />
-                  <span>Projects</span>
-                </NavLink>
                 
-                <NavLink 
-                  to="/admin/blogs"
-                  className={({ isActive }) => 
-                    `flex items-center gap-3 p-3 rounded-lg transition-colors ${
-                      isActive 
-                        ? 'bg-indigo-900/50 text-indigo-300' 
-                        : 'hover:bg-gray-700 text-gray-300'
-                    }`
-                  }
+                {/* Portfolio Website Manager Dropdown */}
+                <button
+                  onClick={() => setIsPortfolioOpen(!isPortfolioOpen)}
+                  className="flex items-center justify-between gap-3 p-3 rounded-lg hover:bg-gray-700 text-gray-300 transition-colors w-full"
                 >
-                  <FileText size={20} />
-                  <span>Blogs</span>
-                </NavLink>
-                
-                <NavLink 
-                  to="/admin/portfolio"
-                  className={({ isActive }) => 
-                    `flex items-center gap-3 p-3 rounded-lg transition-colors ${
-                      isActive 
-                        ? 'bg-indigo-900/50 text-indigo-300' 
-                        : 'hover:bg-gray-700 text-gray-300'
-                    }`
-                  }
-                >
-                  <Cpu size={20} />
-                  <span>Portfolio</span>
-                </NavLink>
-                
+                  <span className="flex items-center gap-3">
+                    <LayoutDashboard size={20} />
+                    <span>Portfolio Website Manager</span>
+                  </span>
+                  {isPortfolioOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                </button>
+
+                {/* Dropdown Items */}
+                {isPortfolioOpen && (
+                  <div className="pl-6 flex flex-col space-y-2">
+                    <NavLink 
+                      to="/admin/projects"
+                      className={({ isActive }) => 
+                        `flex items-center gap-3 p-2 rounded-lg transition-colors ${
+                          isActive 
+                            ? 'bg-indigo-900/50 text-indigo-300' 
+                            : 'hover:bg-gray-700 text-gray-300'
+                        }`
+                      }
+                    >
+                      <FolderOpen size={18} />
+                      <span>Projects</span>
+                    </NavLink>
+                    
+                    <NavLink 
+                      to="/admin/blogs"
+                      className={({ isActive }) => 
+                        `flex items-center gap-3 p-2 rounded-lg transition-colors ${
+                          isActive 
+                            ? 'bg-indigo-900/50 text-indigo-300' 
+                            : 'hover:bg-gray-700 text-gray-300'
+                        }`
+                      }
+                    >
+                      <FileText size={18} />
+                      <span>Blogs</span>
+                    </NavLink>
+                    
+                    <NavLink 
+                      to="/admin/portfolio"
+                      className={({ isActive }) => 
+                        `flex items-center gap-3 p-2 rounded-lg transition-colors ${
+                          isActive 
+                            ? 'bg-indigo-900/50 text-indigo-300' 
+                            : 'hover:bg-gray-700 text-gray-300'
+                        }`
+                      }
+                    >
+                      <Cpu size={18} />
+                      <span>Portfolio</span>
+                    </NavLink>
+                  </div>
+                )}
+
+                {/* Logout */}
                 <button 
                   onClick={handleLogout}
                   className="flex items-center gap-3 p-3 text-red-400 hover:bg-red-900/20 rounded-lg transition-colors mt-4"
