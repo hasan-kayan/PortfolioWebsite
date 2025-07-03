@@ -7,9 +7,9 @@ import PortfolioPage from './pages/PortfolioPage';
 import LoginPage from './pages/LoginPage';
 import PrivateRoute from './components/PrivateRoute';
 import AdminPage from './pages/admin/AdminPage';
-import ProjectManager from './pages/admin/ProjectManager';
-import BlogManager from './pages/admin/BlogManager';
-import PortfolioManager from './pages/admin/PortfolioManager';
+import ProjectManager from './pages/admin/WebsiteManager/ProjectManager';
+import BlogManager from './pages/admin/WebsiteManager/BlogManager';
+import PortfolioManager from './pages/admin/WebsiteManager/PortfolioManager';
 import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
