@@ -64,8 +64,8 @@
   </body>
 </html>
 <script>
-  // Service Worker registration for PWA
-  if ('serviceWorker' in navigator) {
+  // Service Worker registration for PWA (only on HTTPS or localhost)
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/service-worker.js')
         .then(registration => {
@@ -85,35 +85,29 @@
   gtag('config', 'G-XXXXXXXXXX'); // Replace with your Google Analytics ID
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-<script>
-  // Cookie Consent setup
-  window.cookieconsent.initialise({
-    "palette": {
-      "popup": {
-        "background": "#0f172a",
-        "text": "#ffffff"
-      },
-      "button": {
-        "background": "#4f46e5",
-        "text": "#ffffff"
-      }
-    },
-    "theme": "edgeless",
-    "content": {
-      "message": "This website uses cookies to ensure you get the best experience on our website.",
-      "dismiss": "Got it!",
-      "link": "Learn more",
-      "href": "/privacy-policy.html"
-    }
-  });
-</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.js"></script>
 <script>
-  // Font Awesome setup
-  (function(d) {
-    var s = d.createElement("script");
-    s.src = "https://kit.fontawesome.com/a076d05399.js";
-    s.crossOrigin = "anonymous";
-    d.head.appendChild(s);
-  })(document);
-</script> 
+  // Cookie Consent setup - wait for script to load
+  if (typeof window.cookieconsent !== 'undefined') {
+    window.cookieconsent.initialise({
+      "palette": {
+        "popup": {
+          "background": "#0f172a",
+          "text": "#ffffff"
+        },
+        "button": {
+          "background": "#4f46e5",
+          "text": "#ffffff"
+        }
+      },
+      "theme": "edgeless",
+      "content": {
+        "message": "This website uses cookies to ensure you get the best experience on our website.",
+        "dismiss": "Got it!",
+        "link": "Learn more",
+        "href": "/privacy-policy.html"
+      }
+    });
+  }
+</script>
+<!-- Font Awesome removed - using lucide-react icons instead --> 
