@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Loader2, Download, FileText, AlertTriangle } from 'lucide-react';
+import { getApiUrl } from '../config/api.config';
 
 const PortfolioPage = () => {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
@@ -12,7 +13,7 @@ const PortfolioPage = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch("/api/portfolio/download");
+        const response = await fetch(getApiUrl("api/portfolio/download"));
         if (!response.ok) {
           if (response.status === 404) {
             setError("Portfolio PDF not found. Please upload one from the admin panel.");

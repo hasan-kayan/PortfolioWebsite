@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 import BlogCard from '../components/BlogCard';
+import { getApiUrl } from '../config/api.config';
 
 interface Blog {
   _id?: string;
@@ -22,7 +23,7 @@ const BlogsPage = () => {
   useEffect(() => {
     setLoading(true);
     setError(null);
-    fetch(`/api/blogs/get-all-blogs`)
+    fetch(getApiUrl('api/blogs/get-all-blogs'))
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
         return res.json();

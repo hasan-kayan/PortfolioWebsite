@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Loader2, Plus, Edit, Trash2, X, Save, Tag, Link as LinkIcon, Image } from 'lucide-react';
-import axios from 'axios';
+import apiClient from '../../../config/axios.config';
 
 interface Blog {
   _id?: string;
@@ -42,7 +42,7 @@ const BlogManager = () => {
     setLoading(true);
     try {
       // Public endpoint, no token needed
-      const response = await axios.get(`/api/blogs/get-all-blogs`);
+      const response = await apiClient.get(`/api/blogs/get-all-blogs`);
       setBlogs(response.data);
     } catch (err: any) {
       console.error('Error fetching blogs:', err);
@@ -82,7 +82,7 @@ const BlogManager = () => {
       reader.onload = async () => {
         const base64Content = reader.result?.toString().split(',')[1];
         try {
-          const res = await axios.put(
+          const res = await apiClient.put(
             API_ENDPOINT,
             {
               message: `Upload blog image: ${filePath}`,
@@ -136,14 +136,10 @@ const BlogManager = () => {
       };
       
       if (editingId) {
-        await axios.put(`/api/blogs/update-blogby/${editingId}`, blogPayload, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await apiClient.put(`/api/blogs/update-blogby/${editingId}`, blogPayload);
         setSuccess('Blog updated successfully');
       } else {
-        await axios.post(`/api/blogs/create-blog`, blogPayload, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await apiClient.post(`/api/blogs/create-blog`, blogPayload);
         setSuccess('Blog created successfully');
       }
       
@@ -185,9 +181,7 @@ const BlogManager = () => {
     if (!window.confirm('Are you sure you want to delete this blog?')) return;
     
     try {
-      await axios.delete(`/api/blogs/delete-blogby/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await apiClient.delete(`/api/blogs/delete-blogby/${id}`);
       setSuccess('Blog deleted successfully');
       fetchBlogs();
     } catch (err: any) {

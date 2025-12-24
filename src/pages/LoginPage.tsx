@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Loader2, Lock, User } from 'lucide-react';
-import axios from 'axios';
+import apiClient from '../config/axios.config';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
@@ -24,8 +24,8 @@ const LoginPage = () => {
   setError(null);
 
   try {
-    const response = await axios.post(
-      `/api/auth/login`,
+    const response = await apiClient.post(
+      '/api/auth/login',
       {
         username: username.trim(),
         password,

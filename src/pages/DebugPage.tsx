@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { getApiUrl } from '../config/api.config';
 
 const DebugPage = () => {
   const [results, setResults] = useState<any>({});
@@ -34,7 +35,7 @@ const DebugPage = () => {
 
       // Test 2: Projects API
       try {
-        const projectsRes = await fetch('/api/projects/get-all-projects');
+        const projectsRes = await fetch(getApiUrl('api/projects/get-all-projects'));
         tests.projects = {
           status: projectsRes.status,
           ok: projectsRes.ok,
@@ -46,7 +47,7 @@ const DebugPage = () => {
 
       // Test 3: Blogs API
       try {
-        const blogsRes = await fetch('/api/blogs/get-all-blogs');
+        const blogsRes = await fetch(getApiUrl('api/blogs/get-all-blogs'));
         tests.blogs = {
           status: blogsRes.status,
           ok: blogsRes.ok,

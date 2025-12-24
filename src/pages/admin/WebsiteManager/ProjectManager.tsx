@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Loader2, Plus, Edit, Trash2, X, Save, Tag, Link as LinkIcon, Github, ExternalLink, Image } from 'lucide-react';
-import axios from 'axios';
+import { Loader2, Plus, Edit, Trash2, X, Save, Tag, Github, ExternalLink, Image } from 'lucide-react';
+import apiClient from '../../../config/axios.config';
 
 interface Project {
   _id?: string;
@@ -44,7 +44,7 @@ const ProjectManager = () => {
     setLoading(true);
     try {
       // Public endpoint, no token needed
-      const response = await axios.get(`/api/projects/get-all-projects`);
+      const response = await apiClient.get(`/api/projects/get-all-projects`);
       setProjects(response.data);
     } catch (err: any) {
       console.error('Error fetching projects:', err);
@@ -98,7 +98,7 @@ const ProjectManager = () => {
           console.log('📸 [FRONTEND] File converted to base64, length:', base64Content.length);
           console.log('📸 [FRONTEND] Uploading to GitHub API:', API_ENDPOINT);
           
-          const res = await axios.put(
+          const res = await apiClient.put(
             API_ENDPOINT,
             {
               message: `Upload project image: ${filePath}`,
@@ -185,9 +185,7 @@ const ProjectManager = () => {
       // First verify token is still valid
       console.log('🔐 [FRONTEND] Verifying token...');
       try {
-        const verifyResponse = await axios.get('/api/auth/verify', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const verifyResponse = await apiClient.get('/api/auth/verify');
         console.log('✅ [FRONTEND] Token verified:', verifyResponse.data);
       } catch (verifyErr: any) {
         console.error('❌ [FRONTEND] Token verification failed:', verifyErr.response?.data || verifyErr.message);
@@ -244,9 +242,7 @@ const ProjectManager = () => {
         console.log('🔑 [FRONTEND] Authorization header:', `Bearer ${token.substring(0, 20)}...`);
         console.log('📦 [FRONTEND] Update payload:', projectPayload);
         
-        const updateResponse = await axios.put(`/api/projects/update-projectby/${editingId}`, projectPayload, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const updateResponse = await apiClient.put(`/api/projects/update-projectby/${editingId}`, projectPayload);
         
         console.log('✅ [FRONTEND] Project updated successfully:', updateResponse.data);
         setSuccess('Project updated successfully');
@@ -255,9 +251,7 @@ const ProjectManager = () => {
         console.log('🔗 [FRONTEND] Request URL: /api/projects/create-project');
         console.log('🔑 [FRONTEND] Authorization header:', `Bearer ${token.substring(0, 20)}...`);
         
-        const response = await axios.post(`/api/projects/create-project`, projectPayload, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await apiClient.post(`/api/projects/create-project`, projectPayload);
         
         console.log('✅ [FRONTEND] Project created successfully:', response.data);
         setSuccess('Project created successfully');
@@ -310,9 +304,7 @@ const ProjectManager = () => {
     if (!window.confirm('Are you sure you want to delete this project?')) return;
     
     try {
-      await axios.delete(`/api/projects/delete-projectby/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await apiClient.delete(`/api/projects/delete-projectby/${id}`);
       setSuccess('Project deleted successfully');
       fetchProjects();
     } catch (err: any) {

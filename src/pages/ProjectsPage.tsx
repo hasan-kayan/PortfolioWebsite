@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 import ProjectCard from '../components/ProjectCard';
+import { getApiUrl } from '../config/api.config';
 
 interface Project {
   _id?: string;
@@ -23,7 +24,7 @@ const ProjectsPage = () => {
   useEffect(() => {
     setLoading(true);
     setError(null);
-    fetch(`/api/projects/get-all-projects`)
+    fetch(getApiUrl('api/projects/get-all-projects'))
       .then((res) => {
         if (!res.ok) {
           throw new Error(`HTTP error! Status: ${res.status}`);

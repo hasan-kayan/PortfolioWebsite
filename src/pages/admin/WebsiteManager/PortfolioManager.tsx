@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Loader2, Upload, Trash2, FileText, X, AlertTriangle, CheckCircle } from 'lucide-react';
-import axios from 'axios';
+import apiClient from '../../../config/axios.config';
 
 interface Portfolio {
   id: string;
@@ -31,7 +31,7 @@ const PortfolioManager = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get('/api/portfolio/download');
+      const response = await apiClient.get('/api/portfolio/download');
       // If we get a JSON response with URL, it means portfolio exists
       if (response.headers['content-type']?.includes('application/json')) {
         const data = response.data;
@@ -113,9 +113,8 @@ const PortfolioManager = () => {
       const formData = new FormData();
       formData.append('pdf', file);
 
-      await axios.post('/api/portfolio/upload', formData, {
+      await apiClient.post('/api/portfolio/upload', formData, {
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         },
       });
@@ -153,9 +152,7 @@ const PortfolioManager = () => {
     setSuccess(null);
 
     try {
-      await axios.delete('/api/portfolio/delete', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await apiClient.delete('/api/portfolio/delete');
 
       setSuccess('Portfolio deleted successfully!');
       setPortfolio(null);
