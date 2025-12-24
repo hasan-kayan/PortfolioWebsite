@@ -19,7 +19,7 @@ cp .env.example .env
 
 4. `.env` dosyasını düzenleyin:
 ```env
-PORT=5000
+PORT=5001
 FIREBASE_SERVICE_ACCOUNT_PATH=./serviceAccountKey.json
 FIREBASE_PROJECT_ID=hasankayan-d818c
 FIREBASE_STORAGE_BUCKET=hasankayan-d818c.appspot.com
@@ -54,9 +54,9 @@ npm start
 
 ## Sorun Giderme
 
-### Port 5000 zaten kullanımda
+### Port 5001 zaten kullanımda
 ```bash
-lsof -ti:5000 | xargs kill -9
+lsof -ti:5001 | xargs kill -9
 ```
 
 ### Firebase bağlantı hatası
@@ -65,7 +65,7 @@ lsof -ti:5000 | xargs kill -9
 - Firebase Console'da Firestore ve Storage'ın etkin olduğundan emin olun
 
 ### API endpoint'leri çalışmıyor
-- Backend'in çalıştığından emin olun: `http://localhost:5000/health`
+- Backend'in çalıştığından emin olun: `http://localhost:5001/health`
 - Frontend'de Vite proxy ayarlarını kontrol edin
 - Browser console'da hataları kontrol edin
 

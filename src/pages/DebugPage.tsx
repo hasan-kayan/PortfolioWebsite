@@ -19,9 +19,10 @@ const DebugPage = () => {
         tests.healthProxy = { error: err.message };
       }
       
-      // Test 1b: Health check (direct)
+      // Test 1b: Health check (direct - using proxy port)
       try {
-        const healthRes = await fetch('http://localhost:5000/health');
+        const backendPort = import.meta.env.VITE_BACKEND_PORT || '5001';
+        const healthRes = await fetch(`http://localhost:${backendPort}/health`);
         tests.healthDirect = {
           status: healthRes.status,
           ok: healthRes.ok,
@@ -57,7 +58,8 @@ const DebugPage = () => {
 
       // Test 4: Direct backend test (bypass proxy)
       try {
-        const directRes = await fetch('http://localhost:5000/health');
+        const backendPort = import.meta.env.VITE_BACKEND_PORT || '5001';
+        const directRes = await fetch(`http://localhost:${backendPort}/health`);
         tests.directBackend = {
           status: directRes.status,
           ok: directRes.ok,

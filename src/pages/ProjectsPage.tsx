@@ -40,7 +40,7 @@ const ProjectsPage = () => {
       }) 
       .catch((err) => {
         console.error("Error fetching projects:", err);
-        setError(`Failed to load projects: ${err.message}. Make sure the backend server is running on port 5000.`);
+        setError(`Failed to load projects: ${err.message}. Make sure the backend server is running.`);
       })
       .finally(() => setLoading(false));
   }, []);

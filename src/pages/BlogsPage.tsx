@@ -33,7 +33,7 @@ const BlogsPage = () => {
       })
       .catch((err) => {
         console.error("Error fetching blogs:", err);
-        setError(`Failed to load blogs: ${err.message}. Make sure the backend server is running on port 5000.`);
+        setError(`Failed to load blogs: ${err.message}. Make sure the backend server is running.`);
       })
       .finally(() => setLoading(false));
   }, []);
