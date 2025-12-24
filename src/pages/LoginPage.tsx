@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Loader2, Lock, Mail } from 'lucide-react';
+import { Loader2, Lock, User } from 'lucide-react';
 import axios from 'axios';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,9 +25,9 @@ const LoginPage = () => {
 
   try {
     const response = await axios.post(
-      `${import.meta.env.VITE_AUTH_URL}/login`,
+      `/api/auth/login`,
       {
-        username: email.trim(),   // SUNUCU BUNU BEKLİYOR
+        username: username.trim(),
         password,
       }
     );
@@ -72,21 +72,21 @@ const LoginPage = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-              Email
+            <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
+              Username
             </label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                <Mail size={18} />
+                <User size={18} />
               </span>
               <input
-                id="email"
-                type="email"
+                id="username"
+                type="text"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className="w-full pl-10 pr-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="hasankayanformal@gmail.com"
+                placeholder="admin"
               />
             </div>
           </div>

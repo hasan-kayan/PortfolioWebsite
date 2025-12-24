@@ -19,16 +19,28 @@ const ProjectCard = ({ title, description, tech, image, link, githubLink }: Proj
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="h-48 overflow-hidden">
-        <img 
-          src={image || "/images/fallback.png"} 
-          alt={title} 
-          className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-          onError={(e) => {
-            // Fallback if image fails to load
-            (e.target as HTMLImageElement).src = "/images/fallback.png";
-          }}
-        />
+      <div className="h-48 overflow-hidden bg-gray-700 flex items-center justify-center">
+        {image && image !== "/images/fallback.png" ? (
+          <img 
+            src={image} 
+            alt={title} 
+            className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+            onError={(e) => {
+              console.error(`❌ [FRONTEND] Failed to load image for "${title}":`, image);
+              console.error(`❌ [FRONTEND] Error details:`, e);
+              // Fallback if image fails to load
+              (e.target as HTMLImageElement).src = "/images/fallback.png";
+            }}
+            onLoad={() => {
+              console.log(`✅ [FRONTEND] Successfully loaded image for "${title}":`, image);
+            }}
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-gray-500">
+            <span className="text-sm">No Image</span>
+          </div>
+        )}
       </div>
       
       <div className="p-6 flex flex-col flex-grow">

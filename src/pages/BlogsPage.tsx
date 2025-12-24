@@ -11,6 +11,7 @@ interface Blog {
   tags?: string[];
   url?: string;
   images?: string[];
+  videos?: string[];
 }
 
 const BlogsPage = () => {
@@ -20,15 +21,19 @@ const BlogsPage = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${import.meta.env.VITE_BLOG_URL}/get-all-blogs`)
+    setError(null);
+    fetch(`/api/blogs/get-all-blogs`)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
         return res.json();
       })
-      .then((data) => setBlogs(data))
+      .then((data) => {
+        console.log('Blogs loaded:', data);
+        setBlogs(Array.isArray(data) ? data : []);
+      })
       .catch((err) => {
         console.error("Error fetching blogs:", err);
-        setError("Failed to load blogs. Please try again later.");
+        setError(`Failed to load blogs: ${err.message}. Make sure the backend server is running on port 5000.`);
       })
       .finally(() => setLoading(false));
   }, []);

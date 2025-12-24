@@ -11,6 +11,7 @@ interface Blog {
   tags?: string[];
   url?: string;
   images?: string[];
+  videos?: string[];
 }
 
 const initialFormState = {
@@ -32,8 +33,6 @@ const BlogManager = () => {
   const [success, setSuccess] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const token = localStorage.getItem('token');
-  
-  const BLOG_API_URL = `${import.meta.env.VITE_BLOG_URL}`;
 
   useEffect(() => {
     fetchBlogs();
@@ -42,13 +41,12 @@ const BlogManager = () => {
   const fetchBlogs = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${BLOG_API_URL}/get-all-blogs`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      // Public endpoint, no token needed
+      const response = await axios.get(`/api/blogs/get-all-blogs`);
       setBlogs(response.data);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching blogs:', err);
-      setError('Failed to load blogs. Please try again.');
+      setError(err.response?.data?.message || 'Failed to load blogs. Please make sure the backend server is running.');
     } finally {
       setLoading(false);
     }
@@ -109,6 +107,13 @@ const BlogManager = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check if token exists
+    if (!token) {
+      setError('You are not authenticated. Please login again.');
+      return;
+    }
+    
     setSubmitting(true);
     setError(null);
     setSuccess(null);
@@ -131,12 +136,12 @@ const BlogManager = () => {
       };
       
       if (editingId) {
-        await axios.put(`${BLOG_API_URL}/update-blogby/${editingId}`, blogPayload, {
+        await axios.put(`/api/blogs/update-blogby/${editingId}`, blogPayload, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setSuccess('Blog updated successfully');
       } else {
-        await axios.post(`${BLOG_API_URL}/create-blog`, blogPayload, {
+        await axios.post(`/api/blogs/create-blog`, blogPayload, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setSuccess('Blog created successfully');
@@ -146,7 +151,17 @@ const BlogManager = () => {
       fetchBlogs();
     } catch (err: any) {
       console.error('Error saving blog:', err);
-      setError(err.response?.data?.message || 'Failed to save blog. Please try again.');
+      
+      // Handle authentication errors - but don't auto-redirect
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        const errorMsg = err.response?.data?.message || 'Authentication failed. Please check your login.';
+        setError(errorMsg);
+        // Don't clear token or redirect automatically - let user decide
+      } else if (err.code === 'ECONNREFUSED' || err.message?.includes('socket hang up')) {
+        setError('Backend server is not responding. Please make sure the server is running.');
+      } else {
+        setError(err.response?.data?.message || 'Failed to save blog. Please try again.');
+      }
     } finally {
       setSubmitting(false);
     }
@@ -170,7 +185,7 @@ const BlogManager = () => {
     if (!window.confirm('Are you sure you want to delete this blog?')) return;
     
     try {
-      await axios.delete(`${BLOG_API_URL}/delete-blogby/${id}`, {
+      await axios.delete(`/api/blogs/delete-blogby/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSuccess('Blog deleted successfully');

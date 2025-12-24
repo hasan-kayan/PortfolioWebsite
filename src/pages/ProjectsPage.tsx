@@ -12,6 +12,7 @@ interface Project {
   githubLink?: string;
   demoLink?: string;
   images?: string[];
+  videos?: string[];
 }
 
 const ProjectsPage = () => {
@@ -21,17 +22,25 @@ const ProjectsPage = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${import.meta.env.VITE_PROJECT_URL}/get-all-projects`)
+    setError(null);
+    fetch(`/api/projects/get-all-projects`)
       .then((res) => {
         if (!res.ok) {
           throw new Error(`HTTP error! Status: ${res.status}`);
         }
         return res.json();
       })
-      .then((data) => setProjects(data)) 
+      .then((data) => {
+        console.log('Projects loaded:', data);
+        // Log image URLs for debugging
+        data.forEach((project: Project) => {
+          console.log(`Project "${project.title}" images:`, project.images);
+        });
+        setProjects(Array.isArray(data) ? data : []);
+      }) 
       .catch((err) => {
         console.error("Error fetching projects:", err);
-        setError("Failed to load projects. Please try again later.");
+        setError(`Failed to load projects: ${err.message}. Make sure the backend server is running on port 5000.`);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -72,17 +81,57 @@ const ProjectsPage = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {projects.map((project, index) => (
-              <ProjectCard
-                key={project._id || project.id || index}
-                title={project.title}
-                description={project.description}
-                tech={project.technologies.join(", ")}
-                image={project.images?.[0]?.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/') || "/images/fallback.png"}
-                link={project.demoLink}
-                githubLink={project.githubLink}
-              />
-            ))}
+            {projects.map((project, index) => {
+              // Process image URL - handle GitHub, Google Cloud Storage, and direct URLs
+              let imageUrl = "/images/fallback.png";
+              
+              if (project.images && project.images.length > 0) {
+                const rawImageUrl = project.images[0];
+                console.log(`🖼️ [FRONTEND] Processing image URL for "${project.title}":`, rawImageUrl);
+                
+                // GitHub download_url is already in raw.githubusercontent.com format, use as is
+                if (rawImageUrl.includes('raw.githubusercontent.com')) {
+                  imageUrl = rawImageUrl;
+                  console.log(`✅ [FRONTEND] Using GitHub raw URL:`, imageUrl);
+                }
+                // If it's a regular GitHub URL, convert to raw format
+                else if (rawImageUrl.includes('github.com')) {
+                  imageUrl = rawImageUrl
+                    .replace('github.com', 'raw.githubusercontent.com')
+                    .replace('/blob/', '/');
+                  console.log(`✅ [FRONTEND] Converted GitHub URL to raw:`, imageUrl);
+                } 
+                // If it's a Google Cloud Storage URL, use as is
+                else if (rawImageUrl.includes('storage.googleapis.com') || rawImageUrl.includes('googleapis.com')) {
+                  imageUrl = rawImageUrl;
+                  console.log(`✅ [FRONTEND] Using Google Cloud Storage URL:`, imageUrl);
+                }
+                // If it's already a direct URL, use as is
+                else if (rawImageUrl.startsWith('http://') || rawImageUrl.startsWith('https://')) {
+                  imageUrl = rawImageUrl;
+                  console.log(`✅ [FRONTEND] Using direct URL:`, imageUrl);
+                }
+                // Otherwise, assume it's a valid URL
+                else {
+                  imageUrl = rawImageUrl;
+                  console.log(`⚠️ [FRONTEND] Using URL as-is (may need validation):`, imageUrl);
+                }
+              } else {
+                console.log(`⚠️ [FRONTEND] No images found for "${project.title}"`);
+              }
+              
+              return (
+                <ProjectCard
+                  key={project._id || project.id || index}
+                  title={project.title}
+                  description={project.description}
+                  tech={project.technologies.join(", ")}
+                  image={imageUrl}
+                  link={project.demoLink}
+                  githubLink={project.githubLink}
+                />
+              );
+            })}
           </div>
         )}
       </div>

@@ -12,6 +12,7 @@ interface Project {
   githubLink?: string;
   demoLink?: string;
   images?: string[];
+  videos?: string[];
 }
 
 const initialFormState = {
@@ -34,8 +35,6 @@ const ProjectManager = () => {
   const [success, setSuccess] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const token = localStorage.getItem('token');
-  
-  const PROJECT_API_URL = `${import.meta.env.VITE_PROJECT_URL}`;
 
   useEffect(() => {
     fetchProjects();
@@ -44,13 +43,12 @@ const ProjectManager = () => {
   const fetchProjects = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${PROJECT_API_URL}/get-all-projects`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      // Public endpoint, no token needed
+      const response = await axios.get(`/api/projects/get-all-projects`);
       setProjects(response.data);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching projects:', err);
-      setError('Failed to load projects. Please try again.');
+      setError(err.response?.data?.message || 'Failed to load projects. Please make sure the backend server is running.');
     } finally {
       setLoading(false);
     }
@@ -77,15 +75,29 @@ const ProjectManager = () => {
     const REPO = "hasan-kayan/Assets";
     const API_ENDPOINT = `https://api.github.com/repos/${REPO}/contents/${filePath}`;
 
+    console.log('📸 [FRONTEND] Starting GitHub upload...');
+    console.log('📸 [FRONTEND] File:', file.name, file.size, 'bytes');
+    console.log('📸 [FRONTEND] File path:', filePath);
+    console.log('📸 [FRONTEND] GitHub token exists:', !!GITHUB_TOKEN);
+
     if (!GITHUB_TOKEN) {
-      throw new Error("Missing GitHub token.");
+      const error = "Missing GitHub token. Please set VITE_GITHUB_TOKEN in your .env file.";
+      console.error('❌ [FRONTEND]', error);
+      throw new Error(error);
     }
 
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = async () => {
-        const base64Content = reader.result?.toString().split(',')[1];
         try {
+          const base64Content = reader.result?.toString().split(',')[1];
+          if (!base64Content) {
+            throw new Error('Failed to convert file to base64');
+          }
+          
+          console.log('📸 [FRONTEND] File converted to base64, length:', base64Content.length);
+          console.log('📸 [FRONTEND] Uploading to GitHub API:', API_ENDPOINT);
+          
           const res = await axios.put(
             API_ENDPOINT,
             {
@@ -97,61 +109,185 @@ const ProjectManager = () => {
                 Authorization: `token ${GITHUB_TOKEN}`,
                 Accept: "application/vnd.github.v3+json",
               },
+              timeout: 30000, // 30 second timeout
             }
           );
-          resolve(res.data.content.download_url);
-        } catch (err) {
-          reject(err);
+          
+          console.log('✅ [FRONTEND] GitHub upload successful');
+          console.log('📸 [FRONTEND] GitHub upload response:', res.data);
+          
+          // GitHub API returns download_url in the content object
+          const downloadUrl = res.data.content?.download_url;
+          if (!downloadUrl) {
+            throw new Error('GitHub API did not return download_url');
+          }
+          
+          console.log('📸 [FRONTEND] Download URL:', downloadUrl);
+          resolve(downloadUrl);
+        } catch (err: any) {
+          console.error('❌ [FRONTEND] GitHub upload error:', err);
+          console.error('❌ [FRONTEND] Error response:', err.response?.data);
+          console.error('❌ [FRONTEND] Error status:', err.response?.status);
+          console.error('❌ [FRONTEND] Error message:', err.message);
+          
+          if (err.response?.status === 401) {
+            reject(new Error('GitHub authentication failed. Please check your VITE_GITHUB_TOKEN.'));
+          } else if (err.response?.status === 404) {
+            reject(new Error('GitHub repository not found. Please check the repository name.'));
+          } else if (err.code === 'ECONNABORTED') {
+            reject(new Error('GitHub upload timeout. Please try again.'));
+          } else if (err.code === 'ECONNREFUSED' || err.message?.includes('Network Error')) {
+            reject(new Error('Network error connecting to GitHub. Please check your internet connection.'));
+          } else {
+            reject(new Error(`GitHub upload failed: ${err.response?.data?.message || err.message || 'Unknown error'}`));
+          }
         }
       };
-      reader.onerror = reject;
+      reader.onerror = (error) => {
+        console.error('❌ [FRONTEND] FileReader error:', error);
+        reject(new Error('Failed to read file. Please try again.'));
+      };
       reader.readAsDataURL(file);
     });
   };
 
+  // Helper function to normalize URLs
+  const normalizeUrl = (url: string): string => {
+    if (!url || url.trim() === '') return '';
+    const trimmed = url.trim();
+    // If it already starts with http:// or https://, return as is
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      return trimmed;
+    }
+    // Otherwise, add https://
+    return `https://${trimmed}`;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('🚀 [FRONTEND] handleSubmit called');
+    console.log('📋 [FRONTEND] Form data:', form);
+    
+    // Check if token exists
+    if (!token) {
+      console.error('❌ [FRONTEND] No token found');
+      setError('You are not authenticated. Please login again.');
+      return;
+    }
+    
+    console.log('✅ [FRONTEND] Token exists:', token.substring(0, 20) + '...');
+    
     setSubmitting(true);
     setError(null);
     setSuccess(null);
     
     try {
+      // First verify token is still valid
+      console.log('🔐 [FRONTEND] Verifying token...');
+      try {
+        const verifyResponse = await axios.get('/api/auth/verify', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log('✅ [FRONTEND] Token verified:', verifyResponse.data);
+      } catch (verifyErr: any) {
+        console.error('❌ [FRONTEND] Token verification failed:', verifyErr.response?.data || verifyErr.message);
+        if (verifyErr.response?.status === 401 || verifyErr.response?.status === 403) {
+          setError('Your session has expired. Please refresh the page and login again.');
+          setSubmitting(false);
+          return;
+        }
+      }
+      
       let imageUrl = '';
       if (form.image) {
+        console.log('📸 [FRONTEND] Uploading image to GitHub...');
+        console.log('📸 [FRONTEND] Image file:', form.image.name, form.image.size, 'bytes');
         const fileName = `${Date.now()}_${form.image.name}`;
         const filePath = `Portfolio/Projects/${fileName}`;
-        imageUrl = await uploadImageToGitHub(form.image, filePath);
+        try {
+          imageUrl = await uploadImageToGitHub(form.image, filePath);
+          console.log('✅ [FRONTEND] Image uploaded successfully:', imageUrl);
+        } catch (uploadErr: any) {
+          console.error('❌ [FRONTEND] Image upload failed:', uploadErr);
+          console.error('❌ [FRONTEND] Upload error details:', {
+            message: uploadErr.message,
+            code: uploadErr.code,
+            response: uploadErr.response?.data,
+            status: uploadErr.response?.status
+          });
+          // Don't throw here, let the user know but continue with project creation
+          setError(`Image upload failed: ${uploadErr.message || 'Unknown error'}. Project will be created without image.`);
+          // Continue without image - set imageUrl to empty
+          imageUrl = '';
+        }
       }
+      
+      // Normalize URLs before sending
+      const normalizedGithubLink = form.githubLink ? normalizeUrl(form.githubLink) : '';
+      const normalizedDemoLink = form.demoLink ? normalizeUrl(form.demoLink) : '';
       
       const projectPayload = {
         id: form.id,
         title: form.title,
         description: form.description,
-        technologies: form.technologies.split(',').map(tech => tech.trim()),
-        githubLink: form.githubLink,
-        demoLink: form.demoLink,
+        technologies: form.technologies.split(',').map(tech => tech.trim()).filter(tech => tech.length > 0),
+        githubLink: normalizedGithubLink,
+        demoLink: normalizedDemoLink,
         images: imageUrl ? [imageUrl] : [],
       };
       
+      console.log('📦 [FRONTEND] Project payload:', projectPayload);
+      
       if (editingId) {
-        await axios.put(`${PROJECT_API_URL}/update-projectby/${editingId}`, projectPayload, {
+        console.log('✏️ [FRONTEND] Updating project:', editingId);
+        console.log('🔗 [FRONTEND] Request URL: /api/projects/update-projectby/' + editingId);
+        console.log('🔑 [FRONTEND] Authorization header:', `Bearer ${token.substring(0, 20)}...`);
+        console.log('📦 [FRONTEND] Update payload:', projectPayload);
+        
+        const updateResponse = await axios.put(`/api/projects/update-projectby/${editingId}`, projectPayload, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        
+        console.log('✅ [FRONTEND] Project updated successfully:', updateResponse.data);
         setSuccess('Project updated successfully');
       } else {
-        await axios.post(`${PROJECT_API_URL}/create-project`, projectPayload, {
+        console.log('➕ [FRONTEND] Creating new project...');
+        console.log('🔗 [FRONTEND] Request URL: /api/projects/create-project');
+        console.log('🔑 [FRONTEND] Authorization header:', `Bearer ${token.substring(0, 20)}...`);
+        
+        const response = await axios.post(`/api/projects/create-project`, projectPayload, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        
+        console.log('✅ [FRONTEND] Project created successfully:', response.data);
         setSuccess('Project created successfully');
       }
       
       resetForm();
       fetchProjects();
     } catch (err: any) {
-      console.error('Error saving project:', err);
-      setError(err.response?.data?.message || 'Failed to save project. Please try again.');
+      console.error('❌ [FRONTEND] Error saving project:', err);
+      console.error('❌ [FRONTEND] Error response:', err.response);
+      console.error('❌ [FRONTEND] Error status:', err.response?.status);
+      console.error('❌ [FRONTEND] Error data:', err.response?.data);
+      console.error('❌ [FRONTEND] Error message:', err.message);
+      console.error('❌ [FRONTEND] Error code:', err.code);
+      
+      // Handle different error types
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        const errorMsg = err.response?.data?.message || 'Authentication failed. Please check your login.';
+        console.error('🔒 [FRONTEND] Authentication error:', errorMsg);
+        setError(errorMsg);
+      } else if (err.code === 'ECONNREFUSED' || err.message?.includes('socket hang up') || err.message?.includes('Network Error')) {
+        setError('Backend server is not responding. Please wait a moment and try again.');
+      } else if (!err.response) {
+        setError('Network error. Please check your connection and try again.');
+      } else {
+        setError(err.response?.data?.message || 'Failed to save project. Please try again.');
+      }
     } finally {
       setSubmitting(false);
+      console.log('🏁 [FRONTEND] handleSubmit finished');
     }
   };
 
@@ -174,7 +310,7 @@ const ProjectManager = () => {
     if (!window.confirm('Are you sure you want to delete this project?')) return;
     
     try {
-      await axios.delete(`${PROJECT_API_URL}/delete-projectby/${id}`, {
+      await axios.delete(`/api/projects/delete-projectby/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSuccess('Project deleted successfully');
@@ -329,32 +465,32 @@ const ProjectManager = () => {
             <div>
               <label htmlFor="githubLink" className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
                 <Github size={16} />
-                GitHub Link
+                GitHub Link (optional)
               </label>
               <input
-                type="url"
+                type="text"
                 id="githubLink"
                 name="githubLink"
                 value={form.githubLink}
                 onChange={handleChange}
                 className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="https://github.com/username/repo"
+                placeholder="github.com/username/repo (optional)"
               />
             </div>
             
             <div>
               <label htmlFor="demoLink" className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
                 <ExternalLink size={16} />
-                Demo Link
+                Demo Link (optional)
               </label>
               <input
-                type="url"
+                type="text"
                 id="demoLink"
                 name="demoLink"
                 value={form.demoLink}
                 onChange={handleChange}
                 className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="https://example.com"
+                placeholder="www.example.com (optional)"
               />
             </div>
           </div>

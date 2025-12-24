@@ -3,8 +3,6 @@ import { Navigate } from "react-router-dom";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 
-const AUTH_URL = import.meta.env.VITE_AUTH_URL;
-
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [isValid, setIsValid] = useState(false);
@@ -19,7 +17,7 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
       }
 
       try {
-        const response = await axios.get(`${AUTH_URL}/verify`, {
+        const response = await axios.get(`/api/auth/verify`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

@@ -1,0 +1,110 @@
+import dotenv from 'dotenv';
+import { Storage } from '@google-cloud/storage';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+async function createGCSBucket() {
+  try {
+    const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID || process.env.FIREBASE_PROJECT_ID;
+    
+    // .appspot.com uzantısı domain ownership gerektirir, farklı bir ad kullan
+    const bucketName = process.env.GCS_BUCKET_NAME || 
+                      process.env.FIREBASE_STORAGE_BUCKET?.replace('.appspot.com', '-storage') ||
+                      `${projectId}-portfolio-storage`;
+    
+    const location = process.env.GCS_BUCKET_LOCATION || 'us-central1';
+
+    if (!projectId) {
+      throw new Error('GOOGLE_CLOUD_PROJECT_ID or FIREBASE_PROJECT_ID must be set in .env');
+    }
+
+    console.log('🔄 Initializing Google Cloud Storage...');
+
+    let credentials: any = null;
+
+    // Load credentials
+    if (process.env.GOOGLE_CLOUD_SERVICE_ACCOUNT_KEY || process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
+      const key = process.env.GOOGLE_CLOUD_SERVICE_ACCOUNT_KEY || process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+      credentials = JSON.parse(key!);
+    } else if (process.env.GOOGLE_CLOUD_SERVICE_ACCOUNT_PATH || process.env.FIREBASE_SERVICE_ACCOUNT_PATH) {
+      const serviceAccountPath = path.resolve(
+        process.env.GOOGLE_CLOUD_SERVICE_ACCOUNT_PATH || process.env.FIREBASE_SERVICE_ACCOUNT_PATH!
+      );
+      if (!fs.existsSync(serviceAccountPath)) {
+        throw new Error(`Service account file not found at: ${serviceAccountPath}`);
+      }
+      credentials = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
+    }
+
+    const config: any = { projectId };
+    if (credentials) {
+      config.credentials = credentials;
+    }
+
+    const storage = new Storage(config);
+
+    console.log(`\n📦 Checking bucket: ${bucketName}...`);
+    console.log(`   ⚠️  Note: Using custom bucket name (not .appspot.com to avoid domain ownership requirement)`);
+    
+    const bucket = storage.bucket(bucketName);
+    const [exists] = await bucket.exists();
+    
+    if (exists) {
+      console.log(`✅ Bucket "${bucketName}" already exists!`);
+      console.log(`\n🔗 Access it at: https://console.cloud.google.com/storage/browser/${bucketName}?project=${projectId}`);
+      console.log(`\n📝 Update your .env file:`);
+      console.log(`   GCS_BUCKET_NAME=${bucketName}`);
+      process.exit(0);
+    }
+
+    console.log(`\n🔄 Creating bucket "${bucketName}"...`);
+    console.log(`   Project: ${projectId}`);
+    console.log(`   Location: ${location}`);
+    
+    // Create bucket
+    await storage.createBucket(bucketName, {
+      location: location,
+      storageClass: 'STANDARD',
+    });
+    
+    console.log(`\n✅ Bucket "${bucketName}" created successfully!`);
+    console.log(`\n🔗 Access it at: https://console.cloud.google.com/storage/browser/${bucketName}?project=${projectId}`);
+    console.log(`\n📝 Update your .env file:`);
+    console.log(`   GCS_BUCKET_NAME=${bucketName}`);
+    console.log(`\n✨ You can now use this bucket for file storage!`);
+    
+    process.exit(0);
+  } catch (error: any) {
+    console.error('\n❌ Error creating bucket:', error.message);
+    
+    if (error.code === 409 || error.message?.includes('already exists')) {
+      console.log(`✅ Bucket already exists!`);
+      process.exit(0);
+    } else if (error.code === 403 || error.message?.includes('Permission')) {
+      console.error('\n⚠️  Permission denied.');
+      console.error('💡 Make sure your service account has "Storage Admin" role');
+      console.error('   Or create bucket manually via Google Cloud Console:');
+      console.error(`   https://console.cloud.google.com/storage/create-bucket?project=${process.env.GOOGLE_CLOUD_PROJECT_ID || process.env.FIREBASE_PROJECT_ID}`);
+    } else if (error.message?.includes('domain ownership') || error.message?.includes('verify site')) {
+      console.error('\n⚠️  Domain ownership required for .appspot.com buckets.');
+      console.error('💡 Solution: Use a different bucket name without .appspot.com');
+      console.error(`   Example: ${process.env.GOOGLE_CLOUD_PROJECT_ID || process.env.FIREBASE_PROJECT_ID}-portfolio-storage`);
+      console.error('\n   This script automatically uses a custom name. Run it again.');
+    } else {
+      console.error('\n💡 Alternative: Create bucket manually via Google Cloud Console:');
+      console.error(`   https://console.cloud.google.com/storage/create-bucket?project=${process.env.GOOGLE_CLOUD_PROJECT_ID || process.env.FIREBASE_PROJECT_ID}`);
+    }
+    
+    process.exit(1);
+  }
+}
+
+createGCSBucket();
+
+

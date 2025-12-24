@@ -1,18 +1,27 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Loader2, FileText, Download, Trash2, Upload } from 'lucide-react';
+import { Loader2, Upload, Trash2, FileText, X, AlertTriangle, CheckCircle } from 'lucide-react';
 import axios from 'axios';
 
+interface Portfolio {
+  id: string;
+  filename: string;
+  url: string;
+  size: number;
+  mimetype: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 const PortfolioManager = () => {
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
+  const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(true);
-  const [uploading, setUploading] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [showForm, setShowForm] = useState(false);
   const token = localStorage.getItem('token');
-  
-  const PORTFOLIO_API = import.meta.env.VITE_PORTFOLIO_URL;
 
   useEffect(() => {
     fetchPortfolio();
@@ -20,75 +29,156 @@ const PortfolioManager = () => {
 
   const fetchPortfolio = async () => {
     setLoading(true);
+    setError(null);
     try {
-      const response = await fetch(`${PORTFOLIO_API}/download`);
-      if (!response.ok) throw new Error("No portfolio found");
-      const blob = await response.blob();
-      setPdfUrl(URL.createObjectURL(blob));
-    } catch (err) {
-      setPdfUrl(null);
-      console.error('Error fetching portfolio:', err);
+      const response = await axios.get('/api/portfolio/download');
+      // If we get a JSON response with URL, it means portfolio exists
+      if (response.headers['content-type']?.includes('application/json')) {
+        const data = response.data;
+        if (data.url) {
+          // We have a portfolio URL, but we need to get the full portfolio info
+          // Since the download endpoint doesn't return full portfolio info,
+          // we'll construct a basic portfolio object
+          setPortfolio({
+            id: 'current',
+            filename: 'portfolio.pdf',
+            url: data.url,
+            size: 0,
+            mimetype: 'application/pdf',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          });
+        }
+      } else {
+        // PDF blob was streamed, portfolio exists
+        setPortfolio({
+          id: 'current',
+          filename: 'portfolio.pdf',
+          url: '/api/portfolio/download',
+          size: 0,
+          mimetype: 'application/pdf',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+      }
+    } catch (err: any) {
+      if (err.response?.status === 404) {
+        // No portfolio exists yet, which is fine
+        setPortfolio(null);
+      } else {
+        console.error('Error fetching portfolio:', err);
+        setError(err.response?.data?.message || 'Failed to load portfolio.');
+      }
     } finally {
       setLoading(false);
     }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setSelectedFile(e.target.files[0]);
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      if (selectedFile.type !== 'application/pdf') {
+        setError('Only PDF files are allowed.');
+        setFile(null);
+        return;
+      }
+      if (selectedFile.size > 10 * 1024 * 1024) {
+        setError('File size must be less than 10MB.');
+        setFile(null);
+        return;
+      }
+      setFile(selectedFile);
+      setError(null);
     }
   };
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedFile) {
-      setError('Please select a PDF file');
+    
+    if (!file) {
+      setError('Please select a PDF file to upload.');
       return;
     }
 
-    setUploading(true);
+    if (!token) {
+      setError('You are not authenticated. Please login again.');
+      return;
+    }
+
+    setSubmitting(true);
     setError(null);
     setSuccess(null);
-    
-    const formData = new FormData();
-    formData.append('pdf', selectedFile);
 
     try {
-      await axios.post(`${PORTFOLIO_API}/upload`, formData, {
+      const formData = new FormData();
+      formData.append('pdf', file);
+
+      await axios.post('/api/portfolio/upload', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         },
       });
-      
-      setSuccess('Portfolio uploaded successfully');
-      setSelectedFile(null);
-      // Reset the file input
-      const fileInput = document.getElementById('pdf-upload') as HTMLInputElement;
-      if (fileInput) fileInput.value = '';
+
+      setSuccess('Portfolio uploaded successfully!');
+      setFile(null);
+      setShowForm(false);
       fetchPortfolio();
     } catch (err: any) {
       console.error('Error uploading portfolio:', err);
-      setError(err.response?.data?.message || 'Failed to upload portfolio. Please try again.');
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        setError('Authentication failed. Please check your login.');
+      } else if (err.code === 'ECONNREFUSED' || err.message?.includes('Network Error')) {
+        setError('Backend server is not responding. Please make sure the server is running.');
+      } else {
+        setError(err.response?.data?.message || 'Failed to upload portfolio. Please try again.');
+      }
     } finally {
-      setUploading(false);
+      setSubmitting(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete the current portfolio PDF?')) return;
-    
+    if (!window.confirm('Are you sure you want to delete the portfolio? This action cannot be undone.')) {
+      return;
+    }
+
+    if (!token) {
+      setError('You are not authenticated. Please login again.');
+      return;
+    }
+
+    setSubmitting(true);
+    setError(null);
+    setSuccess(null);
+
     try {
-      await axios.delete(`${PORTFOLIO_API}/delete`, {
+      await axios.delete('/api/portfolio/delete', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      
-      setPdfUrl(null);
-      setSuccess('Portfolio deleted successfully');
+
+      setSuccess('Portfolio deleted successfully!');
+      setPortfolio(null);
     } catch (err: any) {
       console.error('Error deleting portfolio:', err);
-      setError(err.response?.data?.message || 'Failed to delete portfolio. Please try again.');
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        setError('Authentication failed. Please check your login.');
+      } else if (err.code === 'ECONNREFUSED' || err.message?.includes('Network Error')) {
+        setError('Backend server is not responding. Please make sure the server is running.');
+      } else {
+        setError(err.response?.data?.message || 'Failed to delete portfolio. Please try again.');
+      }
+    } finally {
+      setSubmitting(false);
     }
+  };
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
   };
 
   if (loading) {
@@ -102,7 +192,31 @@ const PortfolioManager = () => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">Portfolio Manager</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">Portfolio Manager</h2>
+        
+        {!showForm && !portfolio ? (
+          <button
+            onClick={() => setShowForm(true)}
+            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg transition-colors"
+          >
+            <Upload size={18} />
+            Upload Portfolio
+          </button>
+        ) : showForm ? (
+          <button
+            onClick={() => {
+              setShowForm(false);
+              setFile(null);
+              setError(null);
+            }}
+            className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg transition-colors"
+          >
+            <X size={18} />
+            Cancel
+          </button>
+        ) : null}
+      </div>
       
       {error && (
         <motion.div 
@@ -111,7 +225,10 @@ const PortfolioManager = () => {
           animate={{ opacity: 1, height: 'auto' }}
           transition={{ duration: 0.3 }}
         >
-          {error}
+          <div className="flex items-center gap-2">
+            <AlertTriangle size={18} />
+            {error}
+          </div>
         </motion.div>
       )}
       
@@ -122,110 +239,161 @@ const PortfolioManager = () => {
           animate={{ opacity: 1, height: 'auto' }}
           transition={{ duration: 0.3 }}
         >
-          {success}
+          <div className="flex items-center gap-2">
+            <CheckCircle size={18} />
+            {success}
+          </div>
         </motion.div>
       )}
       
-      {pdfUrl ? (
-        <motion.div 
-          className="bg-gray-700 rounded-lg overflow-hidden mb-8"
+      {showForm && (
+        <motion.form
+          onSubmit={handleUpload}
+          className="bg-gray-700 rounded-lg p-6 mb-8"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <h3 className="text-xl font-semibold mb-4">Upload Portfolio PDF</h3>
+          
+          <div className="mb-6">
+            <label htmlFor="pdf" className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
+              <FileText size={16} />
+              Portfolio PDF (Max 10MB)
+            </label>
+            <input
+              type="file"
+              id="pdf"
+              name="pdf"
+              accept="application/pdf"
+              onChange={handleFileChange}
+              required
+              className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+            {file && (
+              <div className="mt-2 p-3 bg-gray-600 rounded-lg">
+                <p className="text-sm text-gray-300">
+                  <strong>Selected:</strong> {file.name} ({formatFileSize(file.size)})
+                </p>
+              </div>
+            )}
+            <p className="text-gray-400 text-sm mt-2">
+              Note: Uploading a new portfolio will replace the existing one.
+            </p>
+          </div>
+          
+          <div className="flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                setShowForm(false);
+                setFile(null);
+                setError(null);
+              }}
+              className="px-6 py-2 bg-gray-600 hover:bg-gray-500 rounded-lg transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={submitting || !file}
+              className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 px-6 py-2 rounded-lg transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="animate-spin" size={18} />
+                  Uploading...
+                </>
+              ) : (
+                <>
+                  <Upload size={18} />
+                  Upload Portfolio
+                </>
+              )}
+            </button>
+          </div>
+        </motion.form>
+      )}
+      
+      {portfolio && !showForm && (
+        <motion.div
+          className="bg-gray-700 rounded-lg p-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="p-4 bg-gray-600 flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <FileText className="text-indigo-400" />
-              <span className="font-medium">Current Portfolio PDF</span>
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <FileText className="text-indigo-400" size={24} />
+              <div>
+                <h3 className="text-xl font-semibold">{portfolio.filename}</h3>
+                {portfolio.size > 0 && (
+                  <p className="text-sm text-gray-400 mt-1">
+                    Size: {formatFileSize(portfolio.size)}
+                  </p>
+                )}
+              </div>
             </div>
+            
             <div className="flex gap-3">
-              <a 
-                href={pdfUrl}
-                download="portfolio.pdf"
-                className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 px-3 py-1 rounded transition-colors text-sm"
+              <button
+                onClick={() => setShowForm(true)}
+                className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg transition-colors"
               >
-                <Download size={16} />
-                Download
-              </a>
+                <Upload size={16} />
+                Replace
+              </button>
               
               <button
                 onClick={handleDelete}
-                className="flex items-center gap-1 bg-red-600 hover:bg-red-700 px-3 py-1 rounded transition-colors text-sm"
+                disabled={submitting}
+                className="flex items-center gap-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                <Trash2 size={16} />
+                {submitting ? (
+                  <Loader2 className="animate-spin" size={16} />
+                ) : (
+                  <Trash2 size={16} />
+                )}
                 Delete
               </button>
             </div>
           </div>
           
-          <div className="p-4">
+          <div className="mt-4 p-4 bg-gray-800 rounded-lg">
             <iframe
-              src={pdfUrl}
-              className="w-full h-[500px] rounded border border-gray-600"
-              title="Portfolio PDF"
+              src={portfolio.url}
+              className="w-full h-[60vh] rounded border border-gray-600"
+              title="Portfolio PDF Preview"
             />
           </div>
-        </motion.div>
-      ) : (
-        <motion.div 
-          className="bg-gray-700/50 border border-gray-600 rounded-lg p-8 text-center mb-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <FileText className="h-16 w-16 text-gray-500 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold mb-2">No Portfolio PDF Found</h3>
-          <p className="text-gray-400 mb-4">
-            Upload a PDF file to display your professional portfolio.
-          </p>
+          
+          <div className="mt-4">
+            <a
+              href={portfolio.url}
+              download={portfolio.filename}
+              className="inline-flex items-center gap-2 text-indigo-400 hover:text-indigo-300"
+            >
+              <FileText size={16} />
+              Download Portfolio
+            </a>
+          </div>
         </motion.div>
       )}
       
-      <motion.form
-        onSubmit={handleUpload}
-        className="bg-gray-700 rounded-lg p-6"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.1 }}
-      >
-        <h3 className="text-xl font-semibold mb-4">
-          {pdfUrl ? 'Replace Portfolio PDF' : 'Upload New Portfolio PDF'}
-        </h3>
-        
-        <div className="mb-6">
-          <label htmlFor="pdf-upload" className="block text-sm font-medium text-gray-300 mb-2">
-            Select PDF File
-          </label>
-          <input
-            type="file"
-            id="pdf-upload"
-            accept="application/pdf"
-            onChange={handleFileChange}
-            className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-          <p className="text-gray-400 text-sm mt-1">
-            {selectedFile ? `Selected: ${selectedFile.name}` : 'No file selected'}
-          </p>
+      {!portfolio && !showForm && (
+        <div className="text-center py-10 text-gray-400">
+          <FileText className="h-16 w-16 mx-auto mb-4 text-gray-600" />
+          <p className="text-lg mb-2">No portfolio uploaded yet.</p>
+          <p className="text-sm mb-4">Upload a PDF portfolio to get started.</p>
+          <button
+            onClick={() => setShowForm(true)}
+            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg transition-colors mx-auto"
+          >
+            <Upload size={18} />
+            Upload Portfolio
+          </button>
         </div>
-        
-        <button
-          type="submit"
-          disabled={uploading || !selectedFile}
-          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 px-6 py-2 rounded-lg transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
-        >
-          {uploading ? (
-            <>
-              <Loader2 className="animate-spin" size={18} />
-              Uploading...
-            </>
-          ) : (
-            <>
-              <Upload size={18} />
-              Upload PDF
-            </>
-          )}
-        </button>
-      </motion.form>
+      )}
     </div>
   );
 };

@@ -9,14 +9,35 @@ const PortfolioPage = () => {
 
   useEffect(() => {
     const fetchPortfolio = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        const response = await fetch(import.meta.env.VITE_PORTFOLIO_URL + "/download");
-        if (!response.ok) throw new Error("Failed to load portfolio PDF");
+        const response = await fetch("/api/portfolio/download");
+        if (!response.ok) {
+          if (response.status === 404) {
+            setError("Portfolio PDF not found. Please upload one from the admin panel.");
+            return;
+          }
+          throw new Error(`Failed to load portfolio PDF: ${response.status}`);
+        }
 
-        const blob = await response.blob();
-        setPdfUrl(URL.createObjectURL(blob));
+        // Check if response is JSON (fallback URL) or blob (streamed PDF)
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const data = await response.json();
+          if (data.url) {
+            setPdfUrl(data.url);
+          } else {
+            throw new Error('No portfolio URL found in response');
+          }
+        } else {
+          // PDF blob stream
+          const blob = await response.blob();
+          setPdfUrl(URL.createObjectURL(blob));
+        }
       } catch (err: any) {
-        setError(err.message);
+        console.error("Error fetching portfolio:", err);
+        setError(err.message || "Failed to load portfolio. Make sure the backend server is running.");
       } finally {
         setLoading(false);
       }

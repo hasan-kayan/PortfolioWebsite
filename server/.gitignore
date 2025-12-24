@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+uploads/
+*.log
+serviceAccountKey.json
+*.json
+!package.json
+!tsconfig.json
+
