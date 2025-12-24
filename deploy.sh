@@ -230,6 +230,34 @@ main() {
     
     echo
     print_info "📦 Git operations..."
+    
+    # Stash any uncommitted changes
+    if ! git diff-index --quiet HEAD -- || ! git diff --staged --quiet; then
+        print_info "Stashing uncommitted changes..."
+        git stash push -m "Auto-stash before deployment ${new_version}"
+        print_success "Changes stashed"
+    fi
+    
+    # Pull latest changes from remote
+    print_info "Pulling latest changes from remote..."
+    if git pull origin main --rebase 2>&1; then
+        print_success "Pulled latest changes from origin/main"
+    else
+        pull_error=$?
+        print_warning "Failed to pull from remote. Continuing with local changes..."
+    fi
+    
+    # Apply stashed changes if any
+    if git stash list | grep -q "Auto-stash before deployment"; then
+        print_info "Applying stashed changes..."
+        if git stash pop 2>&1; then
+            print_success "Applied stashed changes"
+        else
+            print_warning "Stash apply had conflicts. Please resolve manually."
+            print_info "You can view conflicts with: git status"
+        fi
+    fi
+    
     check_git_status
     
     # Stage and commit only version files
@@ -252,6 +280,24 @@ main() {
     fi
     
     echo
+    print_info "📤 Pushing to Git repository..."
+    # Try to push commits and tags
+    if git push origin main 2>&1; then
+        print_success "Pushed commits to origin/main"
+    else
+        push_error=$?
+        print_warning "Failed to push commits. This might be due to branch protection rules."
+        print_info "You may need to push manually or create a pull request."
+    fi
+    
+    # Push tags separately
+    if git push origin "${new_version}" 2>&1; then
+        print_success "Pushed tag ${new_version} to origin"
+    else
+        print_warning "Failed to push tag. You can push it manually with: git push origin ${new_version}"
+    fi
+    
+    echo
     print_info "🚀 Deploying to Firebase Hosting..."
     firebase deploy --only hosting
     
@@ -260,7 +306,19 @@ main() {
         print_success "✅ Deployment completed successfully!"
         print_success "Version ${new_version} is now live!"
         echo
-        print_info "Don't forget to push tags: git push --tags"
+        
+        # Check if push was successful
+        if [ ${push_error:-0} -ne 0 ]; then
+            echo
+            print_warning "⚠️  Git push failed. Possible reasons:"
+            echo "   - Branch protection rules (main branch requires PR)"
+            echo "   - Repository rules violation"
+            echo "   - Missing permissions"
+            echo
+            print_info "To push manually:"
+            echo "   git push origin main"
+            echo "   git push origin ${new_version}"
+        fi
     else
         print_error "Deployment failed!"
         exit 1
