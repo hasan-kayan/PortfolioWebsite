@@ -16,7 +16,13 @@ const PortfolioPage = () => {
         const response = await fetch(getApiUrl("api/portfolio/download"));
         if (!response.ok) {
           if (response.status === 404) {
-            setError("Portfolio PDF not found. Please upload one from the admin panel.");
+            // Try to get error message from response
+            try {
+              const errorData = await response.json();
+              setError(errorData.error || errorData.message || "Portfolio PDF not found. Please upload one from the admin panel.");
+            } catch {
+              setError("Portfolio PDF not found. Please upload one from the admin panel.");
+            }
             return;
           }
           throw new Error(`Failed to load portfolio PDF: ${response.status}`);

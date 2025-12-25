@@ -29,7 +29,10 @@ router.get('/download', async (req, res) => {
     const portfolio = portfolios[0]; // Get the most recent one
     
     if (!portfolio) {
-      return res.status(404).json({ message: 'Portfolio not found' });
+      return res.status(404).json({ 
+        message: 'Portfolio not found',
+        error: 'No portfolio has been uploaded yet. Please upload one from the admin panel.'
+      });
     }
 
     // Extract file path from URL
@@ -51,7 +54,15 @@ router.get('/download', async (req, res) => {
       // Check if file exists
       const [exists] = await file.exists();
       if (!exists) {
-        return res.status(404).json({ message: 'Portfolio file not found in storage' });
+        console.warn(`Portfolio file not found in storage: ${filePath}`);
+        console.warn(`Portfolio URL: ${portfolio.url}`);
+        // If file doesn't exist in storage but exists in Firestore, return the URL
+        // Frontend can try to access it directly
+        return res.json({ 
+          url: portfolio.url,
+          message: 'Portfolio file not found in storage, but URL available',
+          filename: portfolio.filename
+        });
       }
 
       // Stream the file
@@ -63,7 +74,8 @@ router.get('/download', async (req, res) => {
       stream.on('error', (error) => {
         console.error('Error streaming portfolio:', error);
         if (!res.headersSent) {
-          res.status(500).json({ message: 'Error streaming portfolio file' });
+          // Fallback to URL if streaming fails
+          res.json({ url: portfolio.url });
         }
       });
 
@@ -71,7 +83,11 @@ router.get('/download', async (req, res) => {
     } catch (storageError: any) {
       console.error('Error accessing portfolio from storage:', storageError);
       // Fallback: return the URL for frontend to handle directly
-      res.json({ url: portfolio.url });
+      return res.json({ 
+        url: portfolio.url,
+        message: 'Error accessing storage, but URL available',
+        filename: portfolio.filename
+      });
     }
   } catch (error: any) {
     console.error('Error downloading portfolio:', error);

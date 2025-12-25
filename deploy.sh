@@ -221,6 +221,9 @@ main() {
     
     echo
     print_info "🔨 Building application..."
+    # Set Cloud Run backend URL for production build
+    export VITE_API_BASE_URL="https://portfolio-backend-755717652800.europe-west1.run.app"
+    print_info "Using Cloud Run backend: ${VITE_API_BASE_URL}"
     npm run build:all
     if [ $? -ne 0 ]; then
         print_error "Build failed. Deployment aborted."

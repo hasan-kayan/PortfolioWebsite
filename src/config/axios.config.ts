@@ -4,7 +4,7 @@ import { API_BASE_URL } from './api.config';
 
 // Create axios instance with base URL
 const apiClient = axios.create({
-  baseURL: import.meta.env.PROD ? API_BASE_URL : '',
+  baseURL: API_BASE_URL || '',
   headers: {
     'Content-Type': 'application/json',
   },
