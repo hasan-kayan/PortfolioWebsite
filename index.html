@@ -1,12 +1,109 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
   <head>
+    <!-- Core -->
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/logo.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hasan Kayan - Portfolio</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- Title + Description -->
+    <title>Hasan Kayan | Software Engineer (Embedded, Cloud, Web) — Portfolio</title>
+    <meta
+      name="description"
+      content="Hasan Kayan’ın portföyü: gömülü sistemler, bulut/DevOps, React/Node, mikroservis mimarileri ve ürün odaklı projeler. Projeler, deneyimler ve iletişim."
+    />
+
+    <!-- Robots -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+
+    <!-- Canonical (KENDİ DOMAIN'İNLE DEĞİŞTİR) -->
+    <link rel="canonical" href="https://www.hasankayan.com/" />
+
+    <!-- Theme / UI -->
+    <meta name="theme-color" content="#0b1220" />
+    <meta name="color-scheme" content="dark light" />
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Preconnect (font/cdn kullanıyorsan buraya ekle) -->
+    <!-- <link rel="preconnect" href="https://fonts.googleapis.com" /> -->
+    <!-- <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin /> -->
+
+    <!-- Open Graph -->
+    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hasan Kayan" />
+    <meta property="og:title" content="Hasan Kayan | Software Engineer — Portfolio" />
+    <meta
+      property="og:description"
+      content="Gömülü sistemler, Cloud/DevOps, Web & Microservices projeleri. Deneyimler, projeler ve iletişim."
+    />
+    <meta property="og:url" content="https://www.hasankayan.com/" />
+    <meta property="og:image" content="https://www.hasankayan.com/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Hasan Kayan | Software Engineer — Portfolio" />
+    <meta
+      name="twitter:description"
+      content="Embedded, Cloud/DevOps, Web & Microservices projeleri. Portföy, deneyimler ve iletişim."
+    />
+    <meta name="twitter:image" content="https://www.hasankayan.com/og-image.png" />
+
+    <!-- Security / Privacy (opsiyonel ama iyi pratik) -->
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+    <!-- Structured Data: Person + Website -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Person",
+            "@id": "https://www.hasankayan.com/#person",
+            "name": "Hasan Kayan",
+            "url": "https://www.hasankayan.com/",
+            "image": "https://www.hasankayan.com/profile.jpg",
+            "jobTitle": "Software Engineer",
+            "sameAs": [
+              "https://www.linkedin.com/in/hasan-kayan-37a59319b/",
+              "https://github.com/hasan-kayan"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://www.hasankayan.com/#website",
+            "url": "https://www.hasankayan.com/",
+            "name": "Hasan Kayan — Portfolio",
+            "publisher": { "@id": "https://www.hasankayan.com/#person" },
+            "inLanguage": "tr-TR"
+          }
+        ]
+      }
+    </script>
+
+    <!-- SPA Notu:
+      React SPA’da (CSR) buradaki meta’lar sadece ana sayfa için garanti çalışır.
+      Her route için SEO istiyorsan Next.js (SSR/SSG) veya prerender/SSR çözümü şart.
+    -->
   </head>
+
   <body>
+    <!-- NoScript (basic fallback) -->
+    <noscript>
+      <h1>Hasan Kayan — Portfolio</h1>
+      <p>Bu siteyi görüntülemek için JavaScript etkin olmalı.</p>
+      <p>
+        LinkedIn: https://www.linkedin.com/in/hasan-kayan-37a59319b/ • GitHub: https://github.com/hasan-kayan
+      </p>
+    </noscript>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
