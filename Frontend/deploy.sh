@@ -150,14 +150,14 @@ export const versionInfo = {
 
 # Function to check if git is clean
 check_git_status() {
-    # Check if there are uncommitted changes (excluding version files we're about to commit)
-    local other_changes=$(git status --porcelain | grep -v "package.json" | grep -v "src/config/version.ts" | grep -v "^??")
+    # Check if there are uncommitted changes (excluding version files and index.html we're about to commit)
+    local other_changes=$(git status --porcelain | grep -v "package.json" | grep -v "src/config/version.ts" | grep -v "index.html" | grep -v "^??")
     
     if [ -n "$other_changes" ]; then
         print_warning "You have uncommitted changes in other files:"
         echo "$other_changes" | head -5
         echo
-        print_info "Only version files (package.json, src/config/version.ts) will be committed."
+        print_info "Version files (package.json, src/config/version.ts) and index.html will be committed."
         read -p "Continue with deployment? (y/n) " -n 1 -r
         echo
         if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -263,15 +263,15 @@ main() {
     
     check_git_status
     
-    # Stage and commit only version files
-    git add package.json src/config/version.ts
+    # Stage and commit version files and index.html (for SEO updates)
+    git add package.json src/config/version.ts index.html
     
     # Check if there are actually changes to commit
     if git diff --staged --quiet; then
-        print_warning "No version changes to commit. Files may already be at this version."
+        print_warning "No changes to commit. Files may already be at this version."
     else
-        git commit -m "chore: bump version to ${new_version}"
-        print_success "Committed version changes"
+        git commit -m "chore: bump version to ${new_version} and update index.html"
+        print_success "Committed version and index.html changes"
     fi
     
     # Create git tag
