@@ -1,0 +1,26 @@
+.back {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  padding-top: 2rem;
+  transition: color var(--transition);
+}
+.back:hover { color: var(--text-secondary); }
+.header { padding: 2rem 0; display: flex; flex-direction: column; gap: 1rem; }
+.headerMeta { display: flex; gap: 0.5rem; }
+.title { font-size: clamp(2rem, 5vw, 4rem); }
+.desc { color: var(--text-secondary); font-size: 1.05rem; max-width: 640px; line-height: 1.7; }
+.tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2.5rem; }
+.body {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  max-width: 800px;
+}
+.links { display: flex; gap: 1rem; flex-wrap: wrap; padding-bottom: 4rem; }

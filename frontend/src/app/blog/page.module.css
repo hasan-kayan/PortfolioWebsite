@@ -1,0 +1,50 @@
+.header { padding: 3rem 0 2.5rem; display: flex; flex-direction: column; gap: 0.75rem; }
+.title { font-size: clamp(2rem, 5vw, 4rem); }
+.subtitle { color: var(--text-secondary); max-width: 500px; }
+.list { display: flex; flex-direction: column; gap: 0; margin-bottom: 4rem; }
+.postCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+  cursor: pointer;
+  transition: padding-left var(--transition);
+}
+.postCard:hover { padding-left: 0.5rem; }
+.postMeta { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.postDate {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+.postTags { display: flex; gap: 0.4rem; }
+.postTitle {
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  transition: color var(--transition);
+}
+.postCard:hover .postTitle { color: var(--accent-light); }
+.postExcerpt { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; max-width: 600px; }
+.readMore {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--accent-light);
+  transition: transform var(--transition);
+  display: inline-block;
+}
+.postCard:hover .readMore { transform: translateX(4px); }
+.empty {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 2rem;
+  color: var(--text-muted);
+}
